@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contoh Google Sheets Integration - LaporIkan</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">🐟 LaporIkan</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">📊 Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">⚙️ Admin Panel</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row mb-4">
+            <div class="col-lg-12">
+                <h1>📚 Contoh Penggunaan Google Sheets Integration</h1>
+                <p class="text-muted">Panduan praktis menggunakan API Google Sheets</p>
+            </div>
+        </div>
+
+        <!-- Contoh 1 -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">1. Sync Infografis ke Google Sheets</h5>
+            </div>
+            <div class="card-body">
+                <h6>HTML Form:</h6>
+                <pre><code>&lt;form id="laporanForm"&gt;
+    &lt;input type="date" id="tanggal" name="tanggal" required&gt;
+    &lt;textarea id="catatan" name="catatan"&gt;&lt;/textarea&gt;
+    &lt;button type="submit"&gt;Simpan dan Sync ke Sheet&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+                <h6>JavaScript:</h6>
+                <pre><code>document.getElementById('laporanForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const data = {
+        id: '001',
+        tanggal: document.getElementById('tanggal').value,
+        dataTangkapan: { bandeng: 50, lele: 30 },
+        dataLayanan: { penyuluhan: 1 },
+        catatan: document.getElementById('catatan').value
+    };
+
+    const response = await fetch('/api/data-sheet/sync-laporan-harian', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+    if (result.success) {
+        alert('✅ Data berhasil disync ke Google Sheets');
+    }
+});</code></pre>
+
+                <button class="btn btn-primary mt-2" onclick="runExample1()">
+                    ▶️ Test Sekarang
+                </button>
+            </div>
+        </div>
+
+        <!-- Contoh 2 -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">2. Ambil Data dari Google Sheets</h5>
+            </div>
+            <div class="card-body">
+                <h6>JavaScript:</h6>
+                <pre><code>async function getDataFromSheet() {
+    const response = await fetch('/api/data-sheet/laporan-harian');
+    const result = await response.json();
+
+    if (result.success) {
+        console.log('Data dari Sheet:', result.data);
+        
+        // result.data adalah array 2D
+        // Baris pertama adalah header
+        const headers = result.data[0];
+        const dataRows = result.data.slice(1);
+        
+        // Tampilkan di tabel
+        dataRows.forEach(row => {
+            console.log('Tanggal:', row[1], 'Catatan:', row[4]);
+        });
+    }
+}
+
+// Panggil function
+getDataFromSheet();</code></pre>
+
+                <h6>Hasil:</h6>
+                <div id="example2Result" class="alert alert-info" style="display: none;">
+                    <table class="table table-sm table-striped" id="example2Table">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <button class="btn btn-success mt-2" onclick="runExample2()">
+                    ▶️ Test Sekarang
+                </button>
+            </div>
+        </div>
+
+        <!-- Contoh 3 -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">3. Sync Data Ikan</h5>
+            </div>
+            <div class="card-body">
+                <h6>JavaScript:</h6>
+                <pre><code>async function syncIkan() {
+    const ikanData = {
+        id: 'IK-001',
+        namaIkan: 'Ikan Bandeng',
+        hargaEstimasi: 50000,
+        stok: 100,
+        asal: 'Tambak A'
+    };
+
+    const response = await fetch('/api/data-sheet/sync-ikan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ikanData)
+    });
+
+    const result = await response.json();
+    if (result.success) {
+        alert('✅ Data ikan berhasil disync');
+    }
+}</code></pre>
+
+                <button class="btn btn-info mt-2" onclick="runExample3()">
+                    ▶️ Test Sekarang
+                </button>
+            </div>
+        </div>
+
+        <!-- Contoh 4 -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0">4. Batch Sync (Multiple Data)</h5>
+            </div>
+            <div class="card-body">
+                <h6>JavaScript:</h6>
+                <pre><code>async function batchSyncIkan() {
+    const dataArray = [
+        { id: 'IK-001', namaIkan: 'Bandeng', hargaEstimasi: 50000, stok: 100 },
+        { id: 'IK-002', namaIkan: 'Lele', hargaEstimasi: 30000, stok: 150 },
+        { id: 'IK-003', namaIkan: 'Nila', hargaEstimasi: 40000, stok: 80 }
+    ];
+
+    for (const ikan of dataArray) {
+        const response = await fetch('/api/data-sheet/sync-ikan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(ikan)
+        });
+
+        const result = await response.json();
+        console.log(ikan.namaIkan + ': ' + (result.success ? '✅' : '❌'));
+
+        // Delay untuk avoid rate limit
+        await new Promise(resolve => setTimeout(resolve, 500));
+    }
+}</code></pre>
+
+                <button class="btn btn-warning mt-2" onclick="runExample4()">
+                    ▶️ Test Sekarang
+                </button>
+            </div>
+        </div>
+
+        <!-- Contoh 5 -->
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">5. Update Data dengan Retry Logic</h5>
+            </div>
+            <div class="card-body">
+                <h6>JavaScript:</h6>
+                <pre><code>async function syncDenganRetry(data, maxRetries = 3) {
+    let attempts = 0;
+
+    while (attempts < maxRetries) {
+        try {
+            const response = await fetch('/api/data-sheet/sync-laporan-harian', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                console.log('✅ Sync berhasil');
+                return result;
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            attempts++;
+            console.warn(`⚠️ Percobaan ${attempts} gagal: ${error.message}`);
+
+            if (attempts < maxRetries) {
+                const waitTime = Math.pow(2, attempts) * 1000;
+                console.log(`⏳ Retry dalam ${waitTime}ms...`);
+                await new Promise(resolve => setTimeout(resolve, waitTime));
+            }
+        }
+    }
+
+    console.error(`❌ Sync gagal setelah ${maxRetries} percobaan`);
+    return null;
+}</code></pre>
+
+                <button class="btn btn-danger mt-2" onclick="runExample5()">
+                    ▶️ Test Sekarang
+                </button>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="card mb-4 border-info">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">ℹ️ Informasi Penting</h5>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>Semua endpoint require content-type: <code>application/json</code></li>
+                    <li>Data dikirim dalam format JSON dan disimpan ke Google Sheets</li>
+                    <li>Untuk get data, API return array 2D (rows x columns)</li>
+                    <li>Implement retry logic untuk handle network failures</li>
+                    <li>Gunakan delay antara requests untuk avoid API rate limiting</li>
+                    <li>Lihat dokumentasi lengkap di <a href="./README_GOOGLE_SHEETS.md">README_GOOGLE_SHEETS.md</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Example 1: Sync Laporan
+        async function runExample1() {
+            const data = {
+                id: 'CONTOH-001',
+                tanggal: new Date().toISOString().split('T')[0],
+                dataTangkapan: { bandeng: 25, lele: 15 },
+                dataLayanan: { penyuluhan: 1 },
+                catatan: 'Contoh dari halaman demo'
+            };
+
+            try {
+                const response = await fetch('/api/data-sheet/sync-laporan-harian', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                alert(result.success ? '✅ Contoh 1 berhasil!' : '❌ ' + result.message);
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+
+        // Example 2: Get Data
+        async function runExample2() {
+            try {
+                const response = await fetch('/api/data-sheet/laporan-harian');
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    const headers = result.data[0] || [];
+                    const rows = result.data.slice(1);
+
+                    // Update tabel
+                    const thead = document.querySelector('#example2Table thead');
+                    const tbody = document.querySelector('#example2Table tbody');
+                    
+                    thead.innerHTML = '';
+                    tbody.innerHTML = '';
+
+                    // Add headers
+                    const headerRow = document.createElement('tr');
+                    headers.forEach(h => {
+                        const th = document.createElement('th');
+                        th.textContent = h || '-';
+                        headerRow.appendChild(th);
+                    });
+                    thead.appendChild(headerRow);
+
+                    // Add rows
+                    rows.forEach(row => {
+                        const tr = document.createElement('tr');
+                        row.forEach(cell => {
+                            const td = document.createElement('td');
+                            td.textContent = cell || '-';
+                            tr.appendChild(td);
+                        });
+                        tbody.appendChild(tr);
+                    });
+
+                    document.getElementById('example2Result').style.display = 'block';
+                    alert('✅ Contoh 2 berhasil! Total data: ' + rows.length);
+                } else {
+                    alert('⚠️ Tidak ada data');
+                }
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+
+        // Example 3: Sync Ikan
+        async function runExample3() {
+            const data = {
+                id: 'IK-DEMO-001',
+                namaIkan: 'Ikan Demo',
+                hargaEstimasi: 50000,
+                stok: 10,
+                asal: 'Contoh'
+            };
+
+            try {
+                const response = await fetch('/api/data-sheet/sync-ikan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                alert(result.success ? '✅ Contoh 3 berhasil!' : '❌ ' + result.message);
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+
+        // Example 4: Batch Sync
+        async function runExample4() {
+            const dataArray = [
+                { id: 'DEMO-01', namaIkan: 'Demo Bandeng', hargaEstimasi: 50000, stok: 50, asal: 'Demo' },
+                { id: 'DEMO-02', namaIkan: 'Demo Lele', hargaEstimasi: 30000, stok: 75, asal: 'Demo' },
+                { id: 'DEMO-03', namaIkan: 'Demo Nila', hargaEstimasi: 40000, stok: 60, asal: 'Demo' }
+            ];
+
+            let success = 0;
+            let failed = 0;
+
+            (async () => {
+                for (const ikan of dataArray) {
+                    try {
+                        const response = await fetch('/api/data-sheet/sync-ikan', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(ikan)
+                        });
+
+                        const result = await response.json();
+                        if (result.success) success++;
+                        else failed++;
+
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    } catch (error) {
+                        failed++;
+                    }
+                }
+
+                alert(`✅ Contoh 4 selesai!\n✅ Berhasil: ${success}\n❌ Gagal: ${failed}`);
+            })();
+        }
+
+        // Example 5: Retry
+        async function runExample5() {
+            async function syncDenganRetry(data, maxRetries = 3) {
+                let attempts = 0;
+
+                while (attempts < maxRetries) {
+                    try {
+                        const response = await fetch('/api/data-sheet/sync-laporan-harian', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        });
+
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            console.log('✅ Sync berhasil');
+                            return result;
+                        } else {
+                            throw new Error(result.message);
+                        }
+                    } catch (error) {
+                        attempts++;
+                        console.warn(`⚠️ Percobaan ${attempts} gagal: ${error.message}`);
+
+                        if (attempts < maxRetries) {
+                            const waitTime = Math.pow(2, attempts) * 1000;
+                            await new Promise(resolve => setTimeout(resolve, waitTime));
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            const data = {
+                id: 'RETRY-TEST',
+                tanggal: new Date().toISOString().split('T')[0],
+                dataTangkapan: { test: 1 },
+                dataLayanan: {},
+                catatan: 'Test retry logic'
+            };
+
+            const result = await syncDenganRetry(data);
+            alert(result ? '✅ Contoh 5 berhasil dengan retry!' : '❌ Gagal setelah retry');
+        }
+    </script>
+</body>
+</html>

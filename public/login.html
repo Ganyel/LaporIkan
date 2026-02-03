@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin - PPN Tegalsari</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(180deg, #f3f6ff 0%, #eef2ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(16,24,40,0.08);
+            overflow: hidden;
+            animation: slideIn 0.28s ease-out;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            padding: 22px 24px;
+            background: linear-gradient(90deg, rgba(30,58,138,0.04), rgba(59,130,246,0.04));
+        }
+
+        .login-brand {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .login-brand img {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: white;
+            padding: 6px;
+            box-shadow: 0 4px 14px rgba(16,24,40,0.06);
+        }
+
+        .login-header .titles {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .login-header .titles .site-name {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: 0.6px;
+        }
+
+        .login-header .titles .site-sub {
+            font-size: 0.85rem;
+            color: #475569;
+            margin-top: 2px;
+        }
+
+        .login-body {
+            padding: 28px 30px 24px 30px;
+        }
+
+        /* Google Sign In Button */
+        .btn-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border: 1px solid #e6eefc;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #0f172a;
+            background: #ffffff;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-google:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+            background: #f9fafb;
+        }
+
+        .google-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Divider */
+        .login-divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .form-control {
+            padding: 12px 15px;
+            border: 1px solid #e6eefc;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.18s ease;
+            background: #fff;
+            color: #0f172a;
+        }
+
+        .form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-control.is-invalid {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239,68,68,0.06);
+        }
+
+        .invalid-feedback {
+            color: #b91c1c;
+            font-size: 0.875rem;
+            margin-top: 8px;
+        }
+
+        .forgot-password {
+            font-size: 0.9rem;
+            color: #475569;
+            text-decoration: none;
+            transition: color .15s ease;
+        }
+
+        .forgot-password:hover {
+            color: #1e40af;
+            text-decoration: underline;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg,#1e40af,#2563eb);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform .12s ease, box-shadow .12s ease;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(37,99,235,0.14);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Login Footer Row - Remember Me + Button */
+        .login-footer-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .login-footer-row .form-check {
+            margin: 0;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .form-check-input {
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e0e7ff;
+            border-radius: 4px;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .form-check-input:checked {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .form-check-label {
+            cursor: pointer;
+            margin: 0;
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        .alert {
+            border-radius: 8px;
+            border: none;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .alert-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .alert-success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .login-footer {
+            text-align: center;
+            padding: 16px 20px;
+            background: #fff;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #3b82f6;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #e0e7ff;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #94a3b8;
+            border: none;
+            background: none;
+            padding: 6px;
+            border-radius: 6px;
+        }
+
+        .password-toggle:hover {
+            color: #3b82f6;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .default-creds {
+            background: #fffbeb;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: #92400e;
+        }
+
+        .default-creds strong {
+            color: #b45309;
+        }
+
+        /* Sembunyikan navbar di login page */
+        .navbar {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-brand">
+                    <img src="/images/logo.png" alt="PPN Tegalsari logo">
+                    <div class="titles">
+                        <div class="site-name">PELABUHAN PERIKANAN NUSANTARA</div>
+                        <div class="site-sub">Admin Panel</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="login-body">
+                <!-- Alert -->
+                <div id="alertBox"></div>
+
+                <!-- Google Sign In Button -->
+                <button type="button" class="btn btn-google w-100 mb-3" onclick="signInWithGoogle()" aria-label="Sign in with Google">
+                    <svg class="google-icon" viewBox="0 0 24 24" width="20" height="20">
+                        <path fill="#EA4335" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#4285F4" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#FBBC05" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Masuk dengan Google
+                </button>
+
+                <!-- Divider -->
+                <div class="login-divider">or</div>
+
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <!-- Username/Email -->
+                    <div class="form-group">
+                        <label class="form-label" for="username">Username atau Email</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="username" 
+                            placeholder="masukkan username atau email"
+                            autofocus
+                            autocomplete="username"
+                            required>
+                        <div class="form-text" style="margin-top:8px;color:#6b7280;">Gunakan akun admin terdaftar.</div>
+                        <div id="usernameError" class="invalid-feedback" style="display:none;"></div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <div class="input-group">
+                            <input 
+                                type="password" 
+                                class="form-control" 
+                                id="password" 
+                                placeholder="masukkan password"
+                                autocomplete="current-password"
+                                required
+                                style="padding-right: 45px;">
+                            <button 
+                                type="button" 
+                                class="password-toggle" 
+                                id="togglePassword"
+                                onclick="togglePasswordVisibility()">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <div id="passwordError" class="invalid-feedback" style="display:none;"></div>
+                    </div>
+
+                    <!-- Remember Me & Login Button Row -->
+                    <div class="login-footer-row">
+                        <div>
+                            <div class="form-check">
+                                <input 
+                                    type="checkbox" 
+                                    class="form-check-input" 
+                                    id="rememberMe">
+                                <label class="form-check-label" for="rememberMe">
+                                    Remember Me
+                                </label>
+                            </div>
+                            <div style="margin-top:8px;">
+                                <a href="/forgot-password" class="forgot-password">Lupa Password?</a>
+                            </div>
+                        </div>
+
+                        <!-- Login Button with spinner -->
+                        <button type="submit" class="btn btn-login">
+                            <span class="btn-spinner" style="display:none;margin-right:8px;width:16px;height:16px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:text-bottom;display:inline-block;"></span>
+                            <span class="btn-text">Log In</span>
+                        </button>
+                    </div>
+
+                    <!-- Loading -->
+                    <div class="loading" id="loading">
+                        <span class="spinner"></span>
+                        <span>Sedang memverifikasi...</span>
+                    </div>
+                </form>
+            </div>
+
+            <div class="login-footer">
+                © 2025 PPN Tegalsari | Sistem Pelaporan Harian
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Google Sign In (server-side OAuth flow)
+        function signInWithGoogle() {
+            window.location.href = '/auth/google';
+        }
+
+        // Jika server mengembalikan token via query param (dari /auth/google/callback)
+        function handleLoginCallbackFromQuery() {
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('adminToken');
+            const email = params.get('email');
+            if (token) {
+                // store as persistent session (remember by default when coming from OAuth)
+                localStorage.setItem('adminToken', token);
+                if (email) localStorage.setItem('adminUsername', email);
+                history.replaceState(null, '', '/login');
+                window.location.href = '/admin';
+            }
+        }
+
+        handleLoginCallbackFromQuery();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRememberedUsername();
+        });
+
+        // Toggle password visibility with accessible state
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.getElementById('togglePassword');
+            const isHidden = passwordInput.type === 'password';
+            passwordInput.type = isHidden ? 'text' : 'password';
+            toggleBtn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+            toggleBtn.innerHTML = isHidden ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+        }
+
+        // Field-level helpers
+        function showFieldError(fieldId, message) {
+            const input = document.getElementById(fieldId);
+            const err = document.getElementById(fieldId + 'Error');
+            if (input) input.classList.add('is-invalid');
+            if (err) { err.style.display = 'block'; err.textContent = message; }
+        }
+
+        function clearFieldError(fieldId) {
+            const input = document.getElementById(fieldId);
+            const err = document.getElementById(fieldId + 'Error');
+            if (input) input.classList.remove('is-invalid');
+            if (err) { err.style.display = 'none'; err.textContent = ''; }
+        }
+
+        function clearAllFieldErrors() {
+            clearFieldError('username');
+            clearFieldError('password');
+        }
+
+        // Cookie helpers for "remember me"
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days*24*60*60*1000));
+            document.cookie = `${name}=${value};path=/;expires=${d.toUTCString()}`;
+        }
+
+        function eraseCookie(name){ setCookie(name,'',-1); }
+
+        // Persist token depending on rememberMe
+        function persistToken(token, rememberMe, username) {
+            if (rememberMe) {
+                localStorage.setItem('adminToken', token);
+                localStorage.setItem('adminUsername', username || '');
+                setCookie('adminToken', token, 30);
+            } else {
+                sessionStorage.setItem('adminToken', token);
+                // cleanup any persistent cookie
+                eraseCookie('adminToken');
+            }
+        }
+
+        // Handle login form submission (AJAX, no reload)
+        async function handleLogin(event) {
+            event.preventDefault();
+            clearAllFieldErrors();
+
+            const usernameEl = document.getElementById('username');
+            const passwordEl = document.getElementById('password');
+            const username = usernameEl.value.trim();
+            const password = passwordEl.value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            if (!username) { showFieldError('username','Username atau email harus diisi'); usernameEl.focus(); return; }
+            if (!password) { showFieldError('password','Password tidak boleh kosong'); passwordEl.focus(); return; }
+
+            showLoading(true);
+
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await res.json().catch(()=>({ success:false, message:'Respons tidak valid' }));
+
+                if (!res.ok || !data.success) {
+                    // if backend provides field-specific info, show it
+                    if (data.field === 'username') showFieldError('username', data.message || 'Username tidak ditemukan');
+                    else if (data.field === 'password') showFieldError('password', data.message || 'Password salah');
+                    else showAlert(data.message || 'Login gagal. Periksa kredensial Anda.', 'danger');
+                    showLoading(false);
+                    return;
+                }
+
+                // persist token
+                persistToken(data.token, rememberMe, username);
+
+                // remember username for convenience
+                if (rememberMe) localStorage.setItem('rememberedUsername', username);
+                else localStorage.removeItem('rememberedUsername');
+
+                showAlert('✅ Login berhasil! Mengalihkan...', 'success');
+                setTimeout(()=> window.location.href = '/admin', 900);
+
+            } catch (err) {
+                console.error(err);
+                showAlert('Terjadi kesalahan jaringan. Silakan coba lagi.', 'danger');
+                showLoading(false);
+            }
+        }
+
+        // Load remembered username
+        function loadRememberedUsername() {
+            const remembered = localStorage.getItem('rememberedUsername');
+            if (remembered) {
+                document.getElementById('username').value = remembered;
+                document.getElementById('rememberMe').checked = true;
+            }
+        }
+
+        // Show alert (top of card)
+        function showAlert(message, type = 'info') {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.innerHTML = `\n                <div class="alert alert-${type}">\n                    ${message}\n                </div>\n            `;
+            // auto-hide non-error messages after a short time
+            if (type !== 'danger') {
+                setTimeout(()=>{ alertBox.innerHTML = ''; }, 3000);
+            }
+        }
+
+        // Show loading state on button
+        function showLoading(show) {
+            const button = document.querySelector('.btn-login');
+            const spinner = button.querySelector('.btn-spinner');
+            const text = button.querySelector('.btn-text');
+            const loadingBlock = document.getElementById('loading');
+
+            if (show) {
+                if (spinner) spinner.style.display = 'inline-block';
+                if (text) text.textContent = 'Sedang memverifikasi...';
+                button.disabled = true;
+                if (loadingBlock) loadingBlock.style.display = 'none';
+            } else {
+                if (spinner) spinner.style.display = 'none';
+                if (text) text.textContent = 'Log In';
+                button.disabled = false;
+                if (loadingBlock) loadingBlock.style.display = 'none';
+            }
+        }
+
+    </script>
+</body>
+</html>

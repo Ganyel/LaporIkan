@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - PPN Tegalsari</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Header with Logo -->
+    <header class="ppn-header">
+        <div class="container-fluid">
+            <a href="/" class="header-link">
+                <div class="header-content">
+                    <div class="logo-section">
+                        <img src="/images/logo.png" alt="Logo PPN Tegalsari" class="ppn-logo">
+                    </div>
+                    <div class="institution-section">
+                        <h1>PELABUHAN PERIKANAN NUSANTARA</h1>
+                        <h2>TEGALSARI</h2>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </header>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <span class="navbar-brand">⚙️ Admin Panel</span>
+            <div class="ms-auto">
+                <a href="/" class="btn btn-sm btn-outline-light fw-bold me-2">🏠 Beranda</a>
+                <a href="/login" class="btn btn-sm btn-light fw-bold">🚪 Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container-main">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>⚙️ Admin Panel</h1>
+            <p>Kelola data pelaporan harian dan ikan</p>
+        </div>
+
+        <!-- Alert Container -->
+        <div id="alertContainer"></div>
+
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="laporanTab" data-bs-toggle="tab" data-bs-target="#laporanContent" type="button">
+                    📋 Input Infografis
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="ikanTab" data-bs-toggle="tab" data-bs-target="#ikanContent" type="button">
+                    🐟 Input Ikan
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="googleSheetsTab" data-bs-toggle="tab" data-bs-target="#googleSheetsContent" type="button">
+                    📊 Google Sheets
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="adminTabContent">
+            <!-- Laporan Tab -->
+            <div class="tab-pane fade show active" id="laporanContent" role="tabpanel">
+                <div class="card mb-4">
+                    <div class="card-header">📝 Form Input Data Harian</div>
+                    <div class="card-body">
+                        <form id="formLaporan" onsubmit="submitForm(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="tanggal">Tanggal *</label>
+                                    <input type="date" id="tanggal" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="stblkk">STBLKK</label>
+                                    <input type="number" id="stblkk" class="form-control" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="pb">PB</label>
+                                    <input type="number" id="pb" class="form-control" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="asuransi_baru">Asuransi Baru</label>
+                                    <input type="number" id="asuransi_baru" class="form-control" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="asuransi_lama">Asuransi Lama</label>
+                                    <input type="number" id="asuransi_lama" class="form-control" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="bbm_subsidi_surat">BBM Subsidi Surat</label>
+                                    <input type="number" id="bbm_subsidi_surat" class="form-control" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="bbm_non_surat">BBM Non Surat</label>
+                                    <input type="number" id="bbm_non_surat" class="form-control" value="0">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Simpan Data</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="card">
+                    <div class="card-header">📊 Data Infografis</div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th class="text-end">STBLKK</th>
+                                        <th class="text-end">PB</th>
+                                        <th class="text-end">Asuransi Baru</th>
+                                        <th class="text-end">Asuransi Lama</th>
+                                        <th class="text-end">BBM Subsidi</th>
+                                        <th class="text-end">BBM Non Surat</th>
+                                        <th class="text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableLaporanBody">
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">Memuat data...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <div class="tab-pane fade" id="ikanContent" role="tabpanel">
+            <!-- Form Input Section -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-header">📝 Form Input/Edit Ikan</div>
+                        <div class="card-body">
+                            <form id="formIkan" onsubmit="submitFormIkan(event)">
+                                <div class="form-group mb-3">
+                                    <label class="form-label" for="namaIkan">Nama Ikan *</label>
+                                    <input type="text" id="namaIkan" class="form-control" placeholder="Contoh: Ikan Lele" required>
+                                    <small class="text-muted">Masukkan nama jenis ikan</small>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label class="form-label" for="jumlahIkan">Jumlah (ekor) *</label>
+                                    <input type="number" id="jumlahIkan" class="form-control" min="1" placeholder="0" required>
+                                    <small class="text-muted">Masukkan jumlah ikan dalam ekor</small>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label class="form-label" for="fotoIkan">📸 Foto Ikan</label>
+                                    <input type="file" id="fotoIkan" class="form-control" accept="image/*">
+                                    <small class="text-muted">Format: JPG, PNG, GIF (Max 5MB) - Opsional</small>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <div id="previewFoto"></div>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        💾 Simpan Data Ikan
+                                    </button>
+                                    <button type="reset" class="btn btn-secondary" onclick="resetFormIkan()">Reset Form</button>
+                                </div>
+
+                                <div id="editInfo" style="display: none; margin-top: 1rem;">
+                                    <div class="alert alert-info mb-0">
+                                        <small>
+                                            ✏️ Mode Edit - Klik "Reset Form" untuk membuat data baru
+                                            <button type="button" class="btn-close btn-sm float-end" onclick="resetFormIkan()" style="padding: 0;"></button>
+                                        </small>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview & Info Section -->
+                <div class="col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-header">ℹ️ Informasi Data Ikan</div>
+                        <div class="card-body text-center">
+                            <div id="infoContent">
+                                <p class="text-muted">Isi form di sebelah kiri untuk melihat preview data</p>
+                                <div style="font-size: 4rem; color: #ccc;">🐟</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">📊 Statistik Ikan</div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <small class="text-muted">TOTAL JENIS IKAN</small>
+                                <div style="font-size: 2rem; font-weight: bold; color: #1e3a8a;" id="statTotal">0</div>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-muted">TOTAL EKOR IKAN</small>
+                                <div style="font-size: 2rem; font-weight: bold; color: #10b981;" id="statEkor">0</div>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm w-100" onclick="loadIkanDataList()">
+                                🔄 Refresh Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table Section -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>🐟 Daftar Ikan yang Sudah Diinput</span>
+                        <button class="btn btn-primary btn-sm" onclick="loadIkanDataList()">🔄 Refresh</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Foto</th>
+                                <th>Nama Ikan</th>
+                                <th class="text-end">Jumlah (ekor)</th>
+                                <th>Tanggal Input</th>
+                                <th class="text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableIkanBody">
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">Memuat data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    
+    </div>
+
+    
+
+        <!-- Google Sheets Tab -->
+        <div class="tab-pane fade" id="googleSheetsContent" role="tabpanel">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">📡 Status Koneksi Google Sheets</h5>
+                </div>
+                <div class="card-body">
+                    <div id="gsConnectionStatus" class="alert alert-warning" role="alert">
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Mengecek koneksi...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Google Sheets Tabs -->
+            <ul class="nav nav-tabs mb-4" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="gsLaporanTab" data-bs-toggle="tab" data-bs-target="#gsLaporanContent" type="button">
+                        📋 Data Laporan Harian
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="gsIkanTab" data-bs-toggle="tab" data-bs-target="#gsIkanContent" type="button">
+                        🐟 Data Ikan
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="gsSyncTab" data-bs-toggle="tab" data-bs-target="#gsSyncContent" type="button">
+                        🔄 Sinkronisasi
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- Google Sheets Laporan -->
+                <div class="tab-pane fade show active" id="gsLaporanContent" role="tabpanel">
+                    <div class="card mb-4">
+                        <div class="card-header">📋 Data Infografis dari Google Sheets</div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="gsLaporanTable">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Waktu</th>
+                                            <th>Tanggal</th>
+                                            <th>Data Tangkapan</th>
+                                            <th>Data Layanan</th>
+                                            <th>Catatan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="gsLaporanTableBody">
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted">
+                                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                                Mengambil data...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-primary btn-sm" onclick="refreshGSLaporanData()">
+                                    🔄 Refresh
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="clearGSLaporanSheet()">
+                                    🗑️ Clear Sheet
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Google Sheets Ikan -->
+                <div class="tab-pane fade" id="gsIkanContent" role="tabpanel">
+                    <div class="card mb-4">
+                        <div class="card-header">🐟 Data Ikan dari Google Sheets</div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="gsIkanTable">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Waktu Sync</th>
+                                            <th>ID Ikan</th>
+                                            <th>Nama Ikan</th>
+                                            <th>Harga Estimasi</th>
+                                            <th>Stok</th>
+                                            <th>Asal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="gsIkanTableBody">
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted">
+                                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                                Mengambil data...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-primary btn-sm" onclick="refreshGSIkanData()">
+                                    🔄 Refresh
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="clearGSIkanSheet()">
+                                    🗑️ Clear Sheet
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Google Sheets Sync -->
+                <div class="tab-pane fade" id="gsSyncContent" role="tabpanel">
+                    <div class="card mb-4">
+                        <div class="card-header">🔄 Opsi Sinkronisasi</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">📥 Sync dari Aplikasi ke Sheet</h6>
+                                            <p class="text-muted small">Kirim semua data infografis ke Google Sheets</p>
+                                            <button class="btn btn-success w-100" onclick="syncAllToSheet()">
+                                                Sync Laporan
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">📤 Import dari Sheet ke Aplikasi</h6>
+                                            <p class="text-muted small">Ambil data dari Google Sheets ke database</p>
+                                            <button class="btn btn-info w-100" onclick="importFromSheet()">
+                                                Import dari Sheet
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <h6 class="mb-3">Manual Sync Data</h6>
+                            <form id="manualSyncForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Tipe Data</label>
+                                    <select class="form-select" id="syncType" required>
+                                        <option value="">-- Pilih Tipe Data --</option>
+                                        <option value="laporan">Infografis</option>
+                                        <option value="ikan">Data Ikan</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Data (JSON)</label>
+                                    <textarea class="form-control" id="syncData" rows="6" 
+                                        placeholder='{"id": "001", ...}'></textarea>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">
+                                    ➕ Sync Data
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    <div class="footer">
+        <p>&copy; 2025 PPN Tegalsari. Semua hak dilindungi.</p>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/admin.js"></script>
+    
+    <!-- Google Sheets Integration Script -->
+    <script>
+        // Check connection status
+        async function checkGSConnectionStatus() {
+            try {
+                const response = await fetch('/api/data-sheet/laporan-harian');
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('gsConnectionStatus').innerHTML = 
+                        '<span class="badge bg-success">✅ Terhubung ke Google Sheets</span>';
+                    refreshGSLaporanData();
+                    refreshGSIkanData();
+                } else {
+                    throw new Error('Koneksi gagal');
+                }
+            } catch (error) {
+                document.getElementById('gsConnectionStatus').innerHTML = 
+                    '<span class="badge bg-warning">⚠️ Google Sheets tidak tersedia: ' + error.message + '</span>';
+            }
+        }
+
+        // Refresh laporan data dari Google Sheets
+        async function refreshGSLaporanData() {
+            try {
+                const response = await fetch('/api/data-sheet/laporan-harian');
+                const result = await response.json();
+
+                if (result.success) {
+                    const tbody = document.getElementById('gsLaporanTableBody');
+                    tbody.innerHTML = '';
+
+                    if (result.data && result.data.length > 0) {
+                        result.data.forEach((row, index) => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${index + 1}</td>
+                                <td>${row[0] || '-'}</td>
+                                <td>${row[1] || '-'}</td>
+                                <td><small>${row[2] || '-'}</small></td>
+                                <td><small>${row[3] || '-'}</small></td>
+                                <td>${row[4] || '-'}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Tidak ada data</td></tr>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Refresh ikan data dari Google Sheets
+        async function refreshGSIkanData() {
+            try {
+                const response = await fetch('/api/data-sheet/ikan');
+                const result = await response.json();
+
+                if (result.success) {
+                    const tbody = document.getElementById('gsIkanTableBody');
+                    tbody.innerHTML = '';
+
+                    if (result.data && result.data.length > 0) {
+                        result.data.forEach((row, index) => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${index + 1}</td>
+                                <td>${row[0] || '-'}</td>
+                                <td>${row[1] || '-'}</td>
+                                <td>${row[2] || '-'}</td>
+                                <td>${row[3] || '-'}</td>
+                                <td>${row[4] || '-'}</td>
+                                <td>${row[5] || '-'}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Tidak ada data</td></tr>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Clear laporan sheet
+        async function clearGSLaporanSheet() {
+            if (!confirm('Apakah Anda yakin ingin menghapus semua data di sheet ini?')) return;
+
+            try {
+                const response = await fetch('/api/data-sheet/clear/Laporan%20Harian', {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('✅ Sheet berhasil dikosongkan', 'success');
+                    refreshGSLaporanData();
+                } else {
+                    showAlert('❌ Error: ' + result.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Error: ' + error.message, 'danger');
+            }
+        }
+
+        // Clear ikan sheet
+        async function clearGSIkanSheet() {
+            if (!confirm('Apakah Anda yakin ingin menghapus semua data di sheet ini?')) return;
+
+            try {
+                const response = await fetch('/api/data-sheet/clear/Data%20Ikan', {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('✅ Sheet berhasil dikosongkan', 'success');
+                    refreshGSIkanData();
+                } else {
+                    showAlert('❌ Error: ' + result.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Error: ' + error.message, 'danger');
+            }
+        }
+
+        // Sync all to sheet (placeholder)
+        async function syncAllToSheet() {
+            showAlert('⚠️ Fitur sync bulk belum diimplementasikan', 'info');
+        }
+
+        // Import from sheet (placeholder)
+        async function importFromSheet() {
+            showAlert('⚠️ Fitur import belum diimplementasikan', 'info');
+        }
+
+        // Manual sync
+        document.getElementById('manualSyncForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const type = document.getElementById('syncType').value;
+            const data = document.getElementById('syncData').value;
+
+            try {
+                const parsedData = JSON.parse(data);
+                const endpoint = type === 'laporan' ? 
+                    '/api/data-sheet/sync-laporan-harian' : 
+                    '/api/data-sheet/sync-ikan';
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(parsedData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('✅ Data berhasil disync', 'success');
+                    document.getElementById('manualSyncForm').reset();
+                    if (type === 'laporan') {
+                        refreshGSLaporanData();
+                    } else {
+                        refreshGSIkanData();
+                    }
+                } else {
+                    showAlert('❌ Error: ' + result.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Error: ' + error.message, 'danger');
+            }
+        });
+
+        // Initialize Google Sheets on page load
+        window.addEventListener('load', () => {
+            checkGSConnectionStatus();
+            // Load ikan data saat tab ikan di-klik
+            loadIkanDataList();
+        });
+
+        // ============ FUNCTIONS UNTUK INPUT IKAN ============
+
+        // Submit form ikan
+        async function submitFormIkan(event) {
+            event.preventDefault();
+
+            const namaIkan = document.getElementById('namaIkan').value;
+            const jumlahIkan = document.getElementById('jumlahIkan').value;
+            const fotoIkan = document.getElementById('fotoIkan').files[0];
+
+            if (!namaIkan || !jumlahIkan) {
+                showAlert('❌ Nama dan jumlah ikan harus diisi', 'danger');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('nama_ikan', namaIkan);
+            formData.append('jumlah', jumlahIkan);
+            if (fotoIkan) {
+                formData.append('foto', fotoIkan);
+            }
+
+            try {
+                const response = await fetch('/api/ikan', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('✅ Data ikan berhasil disimpan', 'success');
+                    resetFormIkan();
+                    loadIkanDataList();
+                } else {
+                    showAlert('❌ Error: ' + result.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('❌ Error: ' + error.message, 'danger');
+            }
+        }
+
+        // Load ikan data list
+        async function loadIkanDataList() {
+            try {
+                const response = await fetch('/api/ikan');
+                const result = await response.json();
+
+                if (result.success) {
+                    const tbody = document.getElementById('tableIkanBody');
+                    tbody.innerHTML = '';
+
+                    let totalJenis = 0;
+                    let totalEkor = 0;
+
+                    if (result.data && result.data.length > 0) {
+                        result.data.forEach(ikan => {
+                            totalJenis++;
+                            totalEkor += parseInt(ikan.jumlah) || 0;
+
+                            const tanggalInput = new Date(ikan.created_at).toLocaleDateString('id-ID');
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>
+                                    ${ikan.foto ? `<img src="${ikan.foto}" style="height: 50px; border-radius: 5px;">` : '<span class="text-muted">-</span>'}
+                                </td>
+                                <td>${ikan.nama_ikan}</td>
+                                <td class="text-end">${ikan.jumlah} ekor</td>
+                                <td>${tanggalInput}</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-warning" onclick="editIkan(${ikan.id})">✏️</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteIkan(${ikan.id})">🗑️</button>
+                                </td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Belum ada data ikan</td></tr>';
+                    }
+
+                    document.getElementById('statTotal').innerText = totalJenis;
+                    document.getElementById('statEkor').innerText = totalEkor.toLocaleString('id-ID');
+                } else {
+                    showAlert('❌ Error: ' + result.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('❌ Error: ' + error.message, 'danger');
+            }
+        }
+
+        // Reset form ikan
+        function resetFormIkan() {
+            document.getElementById('formIkan').reset();
+            document.getElementById('previewFoto').innerHTML = '';
+            document.getElementById('infoContent').innerHTML = '<p class="text-muted">Isi form di sebelah kiri untuk melihat preview data</p><div style="font-size: 4rem; color: #ccc;">🐟</div>';
+            document.getElementById('editInfo').style.display = 'none';
+        }
+
+        // Edit ikan (placeholder)
+        function editIkan(id) {
+            showAlert('⚠️ Fitur edit belum diimplementasikan', 'info');
+        }
+
+        // Delete ikan
+        async function deleteIkan(id) {
+            if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
+
+            try {
+                const response = await fetch(`/api/ikan/${id}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('✅ Data ikan berhasil dihapus', 'success');
+                    loadIkanDataList();
+                } else {
+                    showAlert('❌ Error: ' + result.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('❌ Error: ' + error.message, 'danger');
+            }
+        }
+
+        // Update preview foto
+        document.addEventListener('change', function(e) {
+            if (e.target.id === 'fotoIkan') {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        document.getElementById('previewFoto').innerHTML = 
+                            `<img src="${event.target.result}" style="max-width: 100%; max-height: 300px; border-radius: 10px;">`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        // Update info preview saat form berubah
+        document.getElementById('namaIkan')?.addEventListener('change', function() {
+            const nama = this.value;
+            const jumlah = document.getElementById('jumlahIkan').value;
+            if (nama) {
+                document.getElementById('infoContent').innerHTML = 
+                    `<h5>${nama}</h5><p>${jumlah} ekor</p><div style="font-size: 3rem;">🐟</div>`;
+            }
+        });
+    </script>
+</body>
+</html>
