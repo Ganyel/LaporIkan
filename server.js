@@ -44,7 +44,10 @@ function checkAdminAuth(req, res, next) {
         const decoded = Buffer.from(token, 'base64').toString();
         const [username] = decoded.split(':');
 
-        if (username === 'admin') {
+        // Accept either local admin tokens (username === 'admin')
+        // or tokens issued by Google OAuth which use the 'google' prefix.
+        // In production use proper JWTs and verify claims instead.
+        if (username === 'admin' || username === 'google') {
             req.adminUsername = username;
             return next();
         }
@@ -112,7 +115,7 @@ app.use((err, req, res, next) => {
 // Start Server
 const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`\n✅ Server berjalan di http://localhost:${PORT}`);
-    console.log(`\n📊 Akses Aplikasi:`);
+    console.log('\n📊 Akses Aplikasi:');
     console.log(`   Dashboard: http://localhost:${PORT}`);
     console.log(`   Admin: http://localhost:${PORT}/admin\n`);
 });

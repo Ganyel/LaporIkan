@@ -50,12 +50,26 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/login">Login</a>
+                        <a class="nav-link" id="navAuthLink" href="/login"><span id="navAuthIcon" class="me-1">🔐</span><span id="navAuthText">Login</span></a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
+
+    <!-- Hero -->
+    <div class="hero">
+        <div class="container hero-inner">
+            <div>
+                <h1 class="hero-title">Dashboard Laporan PPN Tegalsari</h1>
+                <p class="hero-desc">Sistem Pelaporan dan Rekap Data Layanan Perikanan PPN Tegalsari</p>
+                <div class="hero-ctas">
+                    <a id="primaryCta" class="btn btn-primary btn-lg me-2" href="/login" role="button">Login untuk Pelaporan</a>
+                    <a id="secondaryCta" class="btn btn-light btn-lg" href="/laporan-ikan" role="button">Lihat Laporan</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Carousel/Banner -->
     <div id="carouselBanner" class="carousel slide carousel-banner" data-bs-ride="carousel" data-bs-interval="5000">
@@ -293,5 +307,36 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Custom JS -->
     <script src="/js/dashboard.js"></script>
+    <script>
+    // UI logic: update navbar and hero CTA based on login state
+    document.addEventListener('DOMContentLoaded', function() {
+        var token = localStorage.getItem('adminToken');
+        var navAuthLink = document.getElementById('navAuthLink');
+        var navAuthText = document.getElementById('navAuthText');
+        var navAuthIcon = document.getElementById('navAuthIcon');
+        var primaryCta = document.getElementById('primaryCta');
+        if (token) {
+            // User logged in
+            navAuthLink.href = '/admin';
+            navAuthText.textContent = 'Dashboard';
+            navAuthIcon.textContent = '📊';
+            navAuthLink.classList.add('text-warning');
+            primaryCta.textContent = 'Masuk / Kembali ke Dashboard';
+            primaryCta.href = '/admin';
+            primaryCta.classList.remove('btn-primary');
+            primaryCta.classList.add('btn-warning');
+        } else {
+            // Not logged in
+            navAuthLink.href = '/login';
+            navAuthText.textContent = 'Login';
+            navAuthIcon.textContent = '🔐';
+            navAuthLink.classList.remove('text-warning');
+            primaryCta.textContent = 'Login untuk Pelaporan';
+            primaryCta.href = '/login';
+            primaryCta.classList.remove('btn-warning');
+            primaryCta.classList.add('btn-primary');
+        }
+    });
+    </script>
 </body>
 </html>

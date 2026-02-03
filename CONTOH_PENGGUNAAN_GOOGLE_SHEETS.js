@@ -343,7 +343,7 @@ async function contohSyncBatch() {
     await new Promise(resolve => setTimeout(resolve, 500));
   }
 
-  console.log(`\n📊 Sync Summary:`);
+  console.log('\n📊 Sync Summary:');
   console.log(`✅ Berhasil: ${successCount}`);
   console.log(`❌ Gagal: ${failureCount}`);
 }

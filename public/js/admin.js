@@ -38,27 +38,64 @@ async function loadLaporanData() {
 // ==========================================
 function displayLaporanTable(data) {
     const tbody = document.getElementById('tableLaporanBody');
-    
-    if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Belum ada data</td></tr>';
+
+    // Clear existing
+    tbody.innerHTML = '';
+
+    if (!data || data.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.setAttribute('colspan', '8');
+        td.className = 'text-center text-muted';
+        td.textContent = 'Belum ada data';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
         return;
     }
 
-    tbody.innerHTML = data.map(item => `
-        <tr>
-            <td><strong>${formatDate(item.tanggal)}</strong></td>
-            <td class="text-end">${item.stblkk || 0}</td>
-            <td class="text-end">${item.pb || 0}</td>
-            <td class="text-end">${item.asuransi_baru || 0}</td>
-            <td class="text-end">${item.asuransi_lama || 0}</td>
-            <td class="text-end">${item.bbm_subsidi_surat || 0}</td>
-            <td class="text-end">${item.bbm_non_surat || 0}</td>
-            <td class="text-center">
-                <button class="btn btn-primary btn-sm" onclick="editData('${item.tanggal}')">✎ Edit</button>
-                <button class="btn btn-danger btn-sm ms-1" onclick="deleteData('${item.tanggal}')">🗑 Hapus</button>
-            </td>
-        </tr>
-    `).join('');
+    data.forEach(item => {
+        const tr = document.createElement('tr');
+
+        const tdTanggal = document.createElement('td');
+        const strong = document.createElement('strong');
+        strong.textContent = formatDate(item.tanggal);
+        tdTanggal.appendChild(strong);
+        tr.appendChild(tdTanggal);
+
+        const addNumberCell = (value, className) => {
+            const td = document.createElement('td');
+            if (className) td.className = className;
+            td.textContent = value != null ? value : 0;
+            tr.appendChild(td);
+        };
+
+        addNumberCell(item.stblkk || 0, 'text-end');
+        addNumberCell(item.pb || 0, 'text-end');
+        addNumberCell(item.asuransi_baru || 0, 'text-end');
+        addNumberCell(item.asuransi_lama || 0, 'text-end');
+        addNumberCell(item.bbm_subsidi_surat || 0, 'text-end');
+        addNumberCell(item.bbm_non_surat || 0, 'text-end');
+
+        const tdAction = document.createElement('td');
+        tdAction.className = 'text-center';
+        const btnEdit = document.createElement('button');
+        btnEdit.className = 'btn btn-primary btn-sm';
+        btnEdit.textContent = '✎ Edit';
+        btnEdit.type = 'button';
+        btnEdit.addEventListener('click', () => editData(item.tanggal));
+
+        const btnDelete = document.createElement('button');
+        btnDelete.className = 'btn btn-danger btn-sm ms-1';
+        btnDelete.textContent = '🗑 Hapus';
+        btnDelete.type = 'button';
+        btnDelete.addEventListener('click', () => deleteData(item.tanggal));
+
+        tdAction.appendChild(btnEdit);
+        tdAction.appendChild(btnDelete);
+        tr.appendChild(tdAction);
+
+        tbody.appendChild(tr);
+    });
 }
 
 // ==========================================
@@ -180,24 +217,29 @@ async function deleteData(tanggal) {
 // ==========================================
 function showAlert(message, type = 'info') {
     const alertContainer = document.getElementById('alertContainer');
-    const alertId = 'alert-' + Date.now();
-    
-    const alertHtml = `
-        <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show" role="alert">
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    `;
+    const wrapper = document.createElement('div');
+    wrapper.className = `alert alert-${type} alert-dismissible fade show`;
+    wrapper.setAttribute('role', 'alert');
 
-    alertContainer.insertAdjacentHTML('beforeend', alertHtml);
+    const text = document.createElement('span');
+    text.textContent = message;
+    wrapper.appendChild(text);
 
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        const element = document.getElementById(alertId);
-        if (element) {
-            element.remove();
-        }
-    }, 5000);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn-close';
+    btn.setAttribute('data-bs-dismiss','alert');
+    btn.setAttribute('aria-label','Close');
+    wrapper.appendChild(btn);
+
+    alertContainer.appendChild(wrapper);
+
+    // Auto remove after 5 seconds for non-danger
+    if (type !== 'danger') {
+        setTimeout(() => {
+            if (wrapper && wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+        }, 5000);
+    }
 }
 
 // ==========================================

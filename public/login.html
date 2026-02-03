@@ -462,9 +462,14 @@
             const token = params.get('adminToken');
             const email = params.get('email');
             if (token) {
-                // store as persistent session (remember by default when coming from OAuth)
-                localStorage.setItem('adminToken', token);
-                if (email) localStorage.setItem('adminUsername', email);
+                // store token consistently via persistToken() (remember by default from OAuth)
+                try {
+                    persistToken(token, true, email || '');
+                } catch (e) {
+                    // fallback to simple storage if persistToken fails
+                    localStorage.setItem('adminToken', token);
+                    if (email) localStorage.setItem('adminUsername', email);
+                }
                 history.replaceState(null, '', '/login');
                 window.location.href = '/admin';
             }
@@ -483,7 +488,14 @@
             const isHidden = passwordInput.type === 'password';
             passwordInput.type = isHidden ? 'text' : 'password';
             toggleBtn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
-            toggleBtn.innerHTML = isHidden ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+            const icon = toggleBtn.querySelector('i');
+            if (icon) {
+                icon.className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+            } else {
+                const newIcon = document.createElement('i');
+                newIcon.className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+                toggleBtn.appendChild(newIcon);
+            }
         }
 
         // Field-level helpers
@@ -517,14 +529,14 @@
 
         // Persist token depending on rememberMe
         function persistToken(token, rememberMe, username) {
+            // Store token in localStorage or sessionStorage only.
+            // Avoid setting cookies from client-side for security (HttpOnly cookies should be set server-side).
             if (rememberMe) {
                 localStorage.setItem('adminToken', token);
-                localStorage.setItem('adminUsername', username || '');
-                setCookie('adminToken', token, 30);
+                if (username) localStorage.setItem('adminUsername', username);
             } else {
                 sessionStorage.setItem('adminToken', token);
-                // cleanup any persistent cookie
-                eraseCookie('adminToken');
+                if (username) sessionStorage.setItem('adminUsername', username);
             }
         }
 
@@ -591,7 +603,11 @@
         // Show alert (top of card)
         function showAlert(message, type = 'info') {
             const alertBox = document.getElementById('alertBox');
-            alertBox.innerHTML = `\n                <div class="alert alert-${type}">\n                    ${message}\n                </div>\n            `;
+            alertBox.innerHTML = '';
+            const div = document.createElement('div');
+            div.className = `alert alert-${type}`;
+            div.textContent = message;
+            alertBox.appendChild(div);
             // auto-hide non-error messages after a short time
             if (type !== 'danger') {
                 setTimeout(()=>{ alertBox.innerHTML = ''; }, 3000);
@@ -609,7 +625,7 @@
                 if (spinner) spinner.style.display = 'inline-block';
                 if (text) text.textContent = 'Sedang memverifikasi...';
                 button.disabled = true;
-                if (loadingBlock) loadingBlock.style.display = 'none';
+                if (loadingBlock) loadingBlock.style.display = 'block';
             } else {
                 if (spinner) spinner.style.display = 'none';
                 if (text) text.textContent = 'Log In';

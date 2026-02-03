@@ -479,20 +479,16 @@
                 // Update table
                 const tableBody = document.querySelector('#tableHarianBody');
                 if (tableBody) {
-                    const rows = Object.entries(mockData)
-                        .map(([category, value]) => {
-                            const total = Object.values(mockData).reduce((a, b) => a + b, 0);
-                            const percentage = ((value / total) * 100).toFixed(1);
-                            return `
-                                <tr>
-                                    <td><strong>${category}</strong></td>
-                                    <td class="text-end"><span class="badge bg-primary">${value}</span></td>
-                                    <td class="text-end">${percentage}%</td>
-                                </tr>
-                            `;
-                        })
-                        .join('');
-                    tableBody.innerHTML = rows;
+                    tableBody.innerHTML = '';
+                    const total = Object.values(mockData).reduce((a, b) => a + b, 0);
+                    Object.entries(mockData).forEach(([category, value]) => {
+                        const percentage = ((value / total) * 100).toFixed(1);
+                        const tr = document.createElement('tr');
+                        const tdCat = document.createElement('td'); const strongCat = document.createElement('strong'); strongCat.textContent = category; tdCat.appendChild(strongCat); tr.appendChild(tdCat);
+                        const tdVal = document.createElement('td'); tdVal.className = 'text-end'; const span = document.createElement('span'); span.className = 'badge bg-primary'; span.textContent = value; tdVal.appendChild(span); tr.appendChild(tdVal);
+                        const tdPerc = document.createElement('td'); tdPerc.className = 'text-end'; tdPerc.textContent = percentage + '%'; tr.appendChild(tdPerc);
+                        tableBody.appendChild(tr);
+                    });
                 }
             } catch (error) {
                 console.error('Error loading harian data:', error);
@@ -525,19 +521,17 @@
                 // Update table
                 const tableBody = document.querySelector('#tableBulanBody');
                 if (tableBody) {
+                    tableBody.innerHTML = '';
                     const weeks = ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'];
-                    const rows = weeks.map((week, idx) => {
+                    weeks.forEach((week, idx) => {
                         const total = chartInstance.data.datasets.reduce((sum, ds) => sum + ds.data[idx], 0);
                         const avg = Math.round(total / chartInstance.data.datasets.length);
-                        return `
-                            <tr>
-                                <td><strong>${week}</strong></td>
-                                <td class="text-end"><span class="badge bg-success">${total}</span></td>
-                                <td class="text-end">${avg}</td>
-                            </tr>
-                        `;
-                    }).join('');
-                    tableBody.innerHTML = rows;
+                        const tr = document.createElement('tr');
+                        const tdWeek = document.createElement('td'); const strongWeek = document.createElement('strong'); strongWeek.textContent = week; tdWeek.appendChild(strongWeek); tr.appendChild(tdWeek);
+                        const tdTot = document.createElement('td'); tdTot.className = 'text-end'; const span = document.createElement('span'); span.className = 'badge bg-success'; span.textContent = total; tdTot.appendChild(span); tr.appendChild(tdTot);
+                        const tdAvg = document.createElement('td'); tdAvg.className = 'text-end'; tdAvg.textContent = avg; tr.appendChild(tdAvg);
+                        tableBody.appendChild(tr);
+                    });
                 }
             } catch (error) {
                 console.error('Error loading bulanan data:', error);
@@ -565,19 +559,17 @@
                 // Update table
                 const tableBody = document.querySelector('#tableTahunBody');
                 if (tableBody) {
+                    tableBody.innerHTML = '';
                     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-                    const rows = months.map((month, idx) => {
+                    months.forEach((month, idx) => {
                         const total = chartInstance.data.datasets.reduce((sum, ds) => sum + ds.data[idx], 0);
                         const avg = Math.round(total / chartInstance.data.datasets.length);
-                        return `
-                            <tr>
-                                <td><strong>${month}</strong></td>
-                                <td class="text-end"><span class="badge bg-info">${total}</span></td>
-                                <td class="text-end">${avg}</td>
-                            </tr>
-                        `;
-                    }).join('');
-                    tableBody.innerHTML = rows;
+                        const tr = document.createElement('tr');
+                        const tdMonth = document.createElement('td'); const strongMonth = document.createElement('strong'); strongMonth.textContent = month; tdMonth.appendChild(strongMonth); tr.appendChild(tdMonth);
+                        const tdTot = document.createElement('td'); tdTot.className = 'text-end'; const span = document.createElement('span'); span.className = 'badge bg-info'; span.textContent = total; tdTot.appendChild(span); tr.appendChild(tdTot);
+                        const tdAvg = document.createElement('td'); tdAvg.className = 'text-end'; tdAvg.textContent = avg; tr.appendChild(tdAvg);
+                        tableBody.appendChild(tr);
+                    });
                 }
             } catch (error) {
                 console.error('Error loading tahunan data:', error);

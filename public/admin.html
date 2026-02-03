@@ -444,16 +444,24 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    document.getElementById('gsConnectionStatus').innerHTML = 
-                        '<span class="badge bg-success">✅ Terhubung ke Google Sheets</span>';
+                    const status = document.getElementById('gsConnectionStatus');
+                    status.innerHTML = '';
+                    const span = document.createElement('span');
+                    span.className = 'badge bg-success';
+                    span.textContent = '✅ Terhubung ke Google Sheets';
+                    status.appendChild(span);
                     refreshGSLaporanData();
                     refreshGSIkanData();
                 } else {
                     throw new Error('Koneksi gagal');
                 }
             } catch (error) {
-                document.getElementById('gsConnectionStatus').innerHTML = 
-                    '<span class="badge bg-warning">⚠️ Google Sheets tidak tersedia: ' + error.message + '</span>';
+                    const status = document.getElementById('gsConnectionStatus');
+                    status.innerHTML = '';
+                    const span = document.createElement('span');
+                    span.className = 'badge bg-warning';
+                    span.textContent = '⚠️ Google Sheets tidak tersedia: ' + error.message;
+                    status.appendChild(span);
             }
         }
 
@@ -470,18 +478,44 @@
                     if (result.data && result.data.length > 0) {
                         result.data.forEach((row, index) => {
                             const tr = document.createElement('tr');
-                            tr.innerHTML = `
-                                <td>${index + 1}</td>
-                                <td>${row[0] || '-'}</td>
-                                <td>${row[1] || '-'}</td>
-                                <td><small>${row[2] || '-'}</small></td>
-                                <td><small>${row[3] || '-'}</small></td>
-                                <td>${row[4] || '-'}</td>
-                            `;
+
+                            const tdIndex = document.createElement('td');
+                            tdIndex.textContent = index + 1;
+                            tr.appendChild(tdIndex);
+
+                            const makeCell = (value) => {
+                                const td = document.createElement('td');
+                                td.textContent = value != null && value !== '' ? value : '-';
+                                return td;
+                            };
+
+                            tr.appendChild(makeCell(row[0]));
+                            tr.appendChild(makeCell(row[1]));
+
+                            const tdSmall2 = document.createElement('td');
+                            const small2 = document.createElement('small');
+                            small2.textContent = row[2] != null && row[2] !== '' ? row[2] : '-';
+                            tdSmall2.appendChild(small2);
+                            tr.appendChild(tdSmall2);
+
+                            const tdSmall3 = document.createElement('td');
+                            const small3 = document.createElement('small');
+                            small3.textContent = row[3] != null && row[3] !== '' ? row[3] : '-';
+                            tdSmall3.appendChild(small3);
+                            tr.appendChild(tdSmall3);
+
+                            tr.appendChild(makeCell(row[4]));
+
                             tbody.appendChild(tr);
                         });
                     } else {
-                        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Tidak ada data</td></tr>';
+                        const tr = document.createElement('tr');
+                        const td = document.createElement('td');
+                        td.setAttribute('colspan', '6');
+                        td.className = 'text-center text-muted';
+                        td.textContent = 'Tidak ada data';
+                        tr.appendChild(td);
+                        tbody.appendChild(tr);
                     }
                 }
             } catch (error) {
@@ -502,19 +536,34 @@
                     if (result.data && result.data.length > 0) {
                         result.data.forEach((row, index) => {
                             const tr = document.createElement('tr');
-                            tr.innerHTML = `
-                                <td>${index + 1}</td>
-                                <td>${row[0] || '-'}</td>
-                                <td>${row[1] || '-'}</td>
-                                <td>${row[2] || '-'}</td>
-                                <td>${row[3] || '-'}</td>
-                                <td>${row[4] || '-'}</td>
-                                <td>${row[5] || '-'}</td>
-                            `;
+
+                            const tdIndex = document.createElement('td');
+                            tdIndex.textContent = index + 1;
+                            tr.appendChild(tdIndex);
+
+                            const makeCell = (value) => {
+                                const td = document.createElement('td');
+                                td.textContent = value != null && value !== '' ? value : '-';
+                                return td;
+                            };
+
+                            tr.appendChild(makeCell(row[0]));
+                            tr.appendChild(makeCell(row[1]));
+                            tr.appendChild(makeCell(row[2]));
+                            tr.appendChild(makeCell(row[3]));
+                            tr.appendChild(makeCell(row[4]));
+                            tr.appendChild(makeCell(row[5]));
+
                             tbody.appendChild(tr);
                         });
                     } else {
-                        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Tidak ada data</td></tr>';
+                        const tr = document.createElement('tr');
+                        const td = document.createElement('td');
+                        td.setAttribute('colspan', '7');
+                        td.className = 'text-center text-muted';
+                        td.textContent = 'Tidak ada data';
+                        tr.appendChild(td);
+                        tbody.appendChild(tr);
                     }
                 }
             } catch (error) {
@@ -684,22 +733,61 @@
 
                             const tanggalInput = new Date(ikan.created_at).toLocaleDateString('id-ID');
                             const tr = document.createElement('tr');
-                            tr.innerHTML = `
-                                <td>
-                                    ${ikan.foto ? `<img src="${ikan.foto}" style="height: 50px; border-radius: 5px;">` : '<span class="text-muted">-</span>'}
-                                </td>
-                                <td>${ikan.nama_ikan}</td>
-                                <td class="text-end">${ikan.jumlah} ekor</td>
-                                <td>${tanggalInput}</td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-warning" onclick="editIkan(${ikan.id})">✏️</button>
-                                    <button class="btn btn-sm btn-danger" onclick="deleteIkan(${ikan.id})">🗑️</button>
-                                </td>
-                            `;
+
+                            const tdFoto = document.createElement('td');
+                            if (ikan.foto) {
+                                const img = document.createElement('img');
+                                img.src = ikan.foto;
+                                img.style.height = '50px';
+                                img.style.borderRadius = '5px';
+                                tdFoto.appendChild(img);
+                            } else {
+                                const span = document.createElement('span');
+                                span.className = 'text-muted';
+                                span.textContent = '-';
+                                tdFoto.appendChild(span);
+                            }
+                            tr.appendChild(tdFoto);
+
+                            const tdNama = document.createElement('td');
+                            tdNama.textContent = ikan.nama_ikan || '-';
+                            tr.appendChild(tdNama);
+
+                            const tdJumlah = document.createElement('td');
+                            tdJumlah.className = 'text-end';
+                            tdJumlah.textContent = (ikan.jumlah || 0) + ' ekor';
+                            tr.appendChild(tdJumlah);
+
+                            const tdTanggal = document.createElement('td');
+                            tdTanggal.textContent = tanggalInput;
+                            tr.appendChild(tdTanggal);
+
+                            const tdAksi = document.createElement('td');
+                            tdAksi.className = 'text-center';
+                            const btnEdit = document.createElement('button');
+                            btnEdit.className = 'btn btn-sm btn-warning';
+                            btnEdit.type = 'button';
+                            btnEdit.textContent = '✏️';
+                            btnEdit.addEventListener('click', () => editIkan(ikan.id));
+                            const btnDel = document.createElement('button');
+                            btnDel.className = 'btn btn-sm btn-danger';
+                            btnDel.type = 'button';
+                            btnDel.textContent = '🗑️';
+                            btnDel.addEventListener('click', () => deleteIkan(ikan.id));
+                            tdAksi.appendChild(btnEdit);
+                            tdAksi.appendChild(btnDel);
+                            tr.appendChild(tdAksi);
+
                             tbody.appendChild(tr);
                         });
                     } else {
-                        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Belum ada data ikan</td></tr>';
+                        const tr = document.createElement('tr');
+                        const td = document.createElement('td');
+                        td.setAttribute('colspan','5');
+                        td.className = 'text-center text-muted py-4';
+                        td.textContent = 'Belum ada data ikan';
+                        tr.appendChild(td);
+                        tbody.appendChild(tr);
                     }
 
                     document.getElementById('statTotal').innerText = totalJenis;
@@ -715,8 +803,21 @@
         // Reset form ikan
         function resetFormIkan() {
             document.getElementById('formIkan').reset();
-            document.getElementById('previewFoto').innerHTML = '';
-            document.getElementById('infoContent').innerHTML = '<p class="text-muted">Isi form di sebelah kiri untuk melihat preview data</p><div style="font-size: 4rem; color: #ccc;">🐟</div>';
+            const preview = document.getElementById('previewFoto');
+            if (preview) preview.textContent = '';
+            const info = document.getElementById('infoContent');
+            if (info) {
+                info.innerHTML = '';
+                const p = document.createElement('p');
+                p.className = 'text-muted';
+                p.textContent = 'Isi form di sebelah kiri untuk melihat preview data';
+                const div = document.createElement('div');
+                div.style.fontSize = '4rem';
+                div.style.color = '#ccc';
+                div.textContent = '🐟';
+                info.appendChild(p);
+                info.appendChild(div);
+            }
             document.getElementById('editInfo').style.display = 'none';
         }
 
@@ -754,8 +855,14 @@
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = function(event) {
-                        document.getElementById('previewFoto').innerHTML = 
-                            `<img src="${event.target.result}" style="max-width: 100%; max-height: 300px; border-radius: 10px;">`;
+                        const preview = document.getElementById('previewFoto');
+                        preview.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = event.target.result;
+                        img.style.maxWidth = '100%';
+                        img.style.maxHeight = '300px';
+                        img.style.borderRadius = '10px';
+                        preview.appendChild(img);
                     };
                     reader.readAsDataURL(file);
                 }
@@ -767,8 +874,18 @@
             const nama = this.value;
             const jumlah = document.getElementById('jumlahIkan').value;
             if (nama) {
-                document.getElementById('infoContent').innerHTML = 
-                    `<h5>${nama}</h5><p>${jumlah} ekor</p><div style="font-size: 3rem;">🐟</div>`;
+                const info = document.getElementById('infoContent');
+                info.innerHTML = '';
+                const h5 = document.createElement('h5');
+                h5.textContent = nama;
+                const p = document.createElement('p');
+                p.textContent = `${jumlah} ekor`;
+                const div = document.createElement('div');
+                div.style.fontSize = '3rem';
+                div.textContent = '🐟';
+                info.appendChild(h5);
+                info.appendChild(p);
+                info.appendChild(div);
             }
         });
     </script>

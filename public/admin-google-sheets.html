@@ -242,16 +242,29 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    document.getElementById('connectionStatus').innerHTML = 
-                        '<span class="badge bg-success">✅ Terhubung ke Google Sheets</span>';
-                    document.getElementById('sheetInfo').innerHTML = 
-                        '<p class="mb-0">Data: ' + (result.data ? result.data.length : 0) + ' baris</p>';
+                    const statusEl = document.getElementById('connectionStatus');
+                    statusEl.innerHTML = '';
+                    const span = document.createElement('span');
+                    span.className = 'badge bg-success';
+                    span.textContent = '✅ Terhubung ke Google Sheets';
+                    statusEl.appendChild(span);
+
+                    const sheetInfo = document.getElementById('sheetInfo');
+                    sheetInfo.innerHTML = '';
+                    const p = document.createElement('p');
+                    p.className = 'mb-0';
+                    p.textContent = 'Data: ' + (result.data ? result.data.length : 0) + ' baris';
+                    sheetInfo.appendChild(p);
                 } else {
                     throw new Error('Koneksi gagal');
                 }
             } catch (error) {
-                document.getElementById('connectionStatus').innerHTML = 
-                    '<span class="badge bg-danger">❌ Tidak terhubung: ' + error.message + '</span>';
+                const statusEl = document.getElementById('connectionStatus');
+                statusEl.innerHTML = '';
+                const span = document.createElement('span');
+                span.className = 'badge bg-danger';
+                span.textContent = '❌ Tidak terhubung: ' + error.message;
+                statusEl.appendChild(span);
             }
         }
 
@@ -268,22 +281,26 @@
                     if (result.data && result.data.length > 0) {
                         result.data.forEach((row, index) => {
                             const tr = document.createElement('tr');
-                            tr.innerHTML = `
-                                <td>${index + 1}</td>
-                                <td>${row[0] || '-'}</td>
-                                <td>${row[1] || '-'}</td>
-                                <td><small>${row[2] || '-'}</small></td>
-                                <td><small>${row[3] || '-'}</small></td>
-                                <td>${row[4] || '-'}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-warning">Edit</button>
-                                    <button class="btn btn-sm btn-danger">Hapus</button>
-                                </td>
-                            `;
+                            const tdIndex = document.createElement('td'); tdIndex.textContent = index + 1; tr.appendChild(tdIndex);
+                            const td0 = document.createElement('td'); td0.textContent = row[0] || '-'; tr.appendChild(td0);
+                            const td1 = document.createElement('td'); td1.textContent = row[1] || '-'; tr.appendChild(td1);
+                            const td2 = document.createElement('td'); const small2 = document.createElement('small'); small2.textContent = row[2] || '-'; td2.appendChild(small2); tr.appendChild(td2);
+                            const td3 = document.createElement('td'); const small3 = document.createElement('small'); small3.textContent = row[3] || '-'; td3.appendChild(small3); tr.appendChild(td3);
+                            const td4 = document.createElement('td'); td4.textContent = row[4] || '-'; tr.appendChild(td4);
+                            const tdActions = document.createElement('td');
+                            const btnEdit = document.createElement('button'); btnEdit.className = 'btn btn-sm btn-warning'; btnEdit.textContent = 'Edit';
+                            const btnDel = document.createElement('button'); btnDel.className = 'btn btn-sm btn-danger'; btnDel.textContent = 'Hapus';
+                            tdActions.appendChild(btnEdit); tdActions.appendChild(btnDel); tr.appendChild(tdActions);
                             tbody.appendChild(tr);
                         });
                     } else {
-                        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Tidak ada data</td></tr>';
+                        const trEmpty = document.createElement('tr');
+                        const tdEmpty = document.createElement('td');
+                        tdEmpty.setAttribute('colspan','7');
+                        tdEmpty.className = 'text-center text-muted';
+                        tdEmpty.textContent = 'Tidak ada data';
+                        trEmpty.appendChild(tdEmpty);
+                        tbody.appendChild(trEmpty);
                     }
                 }
             } catch (error) {
@@ -304,23 +321,27 @@
                     if (result.data && result.data.length > 0) {
                         result.data.forEach((row, index) => {
                             const tr = document.createElement('tr');
-                            tr.innerHTML = `
-                                <td>${index + 1}</td>
-                                <td>${row[0] || '-'}</td>
-                                <td>${row[1] || '-'}</td>
-                                <td>${row[2] || '-'}</td>
-                                <td>${row[3] || '-'}</td>
-                                <td>${row[4] || '-'}</td>
-                                <td>${row[5] || '-'}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-warning">Edit</button>
-                                    <button class="btn btn-sm btn-danger">Hapus</button>
-                                </td>
-                            `;
+                            const tdIndex = document.createElement('td'); tdIndex.textContent = index + 1; tr.appendChild(tdIndex);
+                            const td0 = document.createElement('td'); td0.textContent = row[0] || '-'; tr.appendChild(td0);
+                            const td1 = document.createElement('td'); td1.textContent = row[1] || '-'; tr.appendChild(td1);
+                            const td2 = document.createElement('td'); td2.textContent = row[2] || '-'; tr.appendChild(td2);
+                            const td3 = document.createElement('td'); td3.textContent = row[3] || '-'; tr.appendChild(td3);
+                            const td4 = document.createElement('td'); td4.textContent = row[4] || '-'; tr.appendChild(td4);
+                            const td5 = document.createElement('td'); td5.textContent = row[5] || '-'; tr.appendChild(td5);
+                            const tdActions = document.createElement('td');
+                            const btnEdit = document.createElement('button'); btnEdit.className = 'btn btn-sm btn-warning'; btnEdit.textContent = 'Edit';
+                            const btnDel = document.createElement('button'); btnDel.className = 'btn btn-sm btn-danger'; btnDel.textContent = 'Hapus';
+                            tdActions.appendChild(btnEdit); tdActions.appendChild(btnDel); tr.appendChild(tdActions);
                             tbody.appendChild(tr);
                         });
                     } else {
-                        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Tidak ada data</td></tr>';
+                        const trEmpty = document.createElement('tr');
+                        const tdEmpty = document.createElement('td');
+                        tdEmpty.setAttribute('colspan','8');
+                        tdEmpty.className = 'text-center text-muted';
+                        tdEmpty.textContent = 'Tidak ada data';
+                        trEmpty.appendChild(tdEmpty);
+                        tbody.appendChild(trEmpty);
                     }
                 }
             } catch (error) {

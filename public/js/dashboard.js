@@ -146,23 +146,40 @@ async function loadDataHarian(startDate, endDate) {
 // ==========================================
 function displayTableHarian(data) {
     const tbody = document.getElementById('tableHarianBody');
-    
-    if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Tidak ada data</td></tr>';
+    tbody.innerHTML = '';
+    if (!data || data.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.setAttribute('colspan','7');
+        td.className = 'text-center text-muted';
+        td.textContent = 'Tidak ada data';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
         return;
     }
 
-    tbody.innerHTML = data.map(item => `
-        <tr>
-            <td>${formatDate(item.tanggal)}</td>
-            <td class="text-end">${item.stblkk || 0}</td>
-            <td class="text-end">${item.pb || 0}</td>
-            <td class="text-end">${item.asuransi_baru || 0}</td>
-            <td class="text-end">${item.asuransi_lama || 0}</td>
-            <td class="text-end">${item.bbm_subsidi_surat || 0}</td>
-            <td class="text-end">${item.bbm_non_surat || 0}</td>
-        </tr>
-    `).join('');
+    data.forEach(item => {
+        const tr = document.createElement('tr');
+        const tdTanggal = document.createElement('td');
+        tdTanggal.textContent = formatDate(item.tanggal);
+        tr.appendChild(tdTanggal);
+
+        const addNumberCell = (value) => {
+            const td = document.createElement('td');
+            td.className = 'text-end';
+            td.textContent = value || 0;
+            tr.appendChild(td);
+        };
+
+        addNumberCell(item.stblkk || 0);
+        addNumberCell(item.pb || 0);
+        addNumberCell(item.asuransi_baru || 0);
+        addNumberCell(item.asuransi_lama || 0);
+        addNumberCell(item.bbm_subsidi_surat || 0);
+        addNumberCell(item.bbm_non_surat || 0);
+
+        tbody.appendChild(tr);
+    });
 }
 
 // ==========================================
@@ -319,27 +336,35 @@ async function loadDataBulanan() {
 // ==========================================
 function displayTableBulanan(data) {
     const tbody = document.getElementById('tableBulanBody');
-    
-    if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Tidak ada data</td></tr>';
+    tbody.innerHTML = '';
+    if (!data || data.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.setAttribute('colspan','5');
+        td.className = 'text-center text-muted';
+        td.textContent = 'Tidak ada data';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
         return;
     }
 
-    tbody.innerHTML = data.map(item => {
+    data.forEach(item => {
+        const tr = document.createElement('tr');
         const bulan = monthNames[item.bulan - 1];
         const asuransi = (parseInt(item.asuransi_baru) || 0) + (parseInt(item.asuransi_lama) || 0);
         const bbm = (parseInt(item.bbm_subsidi_surat) || 0) + (parseInt(item.bbm_non_surat) || 0);
-        
-        return `
-            <tr>
-                <td>${bulan}</td>
-                <td class="text-end">${item.stblkk || 0}</td>
-                <td class="text-end">${item.pb || 0}</td>
-                <td class="text-end">${asuransi}</td>
-                <td class="text-end">${bbm}</td>
-            </tr>
-        `;
-    }).join('');
+
+        const tdBulan = document.createElement('td');
+        tdBulan.textContent = bulan;
+        tr.appendChild(tdBulan);
+
+        const tdStbl = document.createElement('td'); tdStbl.className = 'text-end'; tdStbl.textContent = item.stblkk || 0; tr.appendChild(tdStbl);
+        const tdPb = document.createElement('td'); tdPb.className = 'text-end'; tdPb.textContent = item.pb || 0; tr.appendChild(tdPb);
+        const tdAs = document.createElement('td'); tdAs.className = 'text-end'; tdAs.textContent = asuransi; tr.appendChild(tdAs);
+        const tdBbm = document.createElement('td'); tdBbm.className = 'text-end'; tdBbm.textContent = bbm; tr.appendChild(tdBbm);
+
+        tbody.appendChild(tr);
+    });
 }
 
 // ==========================================
@@ -494,26 +519,31 @@ async function loadDataTahunan() {
 // ==========================================
 function displayTableTahunan(data) {
     const tbody = document.getElementById('tableTahunBody');
-    
-    if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Tidak ada data</td></tr>';
+    tbody.innerHTML = '';
+    if (!data || data.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.setAttribute('colspan','5');
+        td.className = 'text-center text-muted';
+        td.textContent = 'Tidak ada data';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
         return;
     }
 
-    tbody.innerHTML = data.map(item => {
+    data.forEach(item => {
+        const tr = document.createElement('tr');
         const asuransi = (parseInt(item.asuransi_baru) || 0) + (parseInt(item.asuransi_lama) || 0);
         const bbm = (parseInt(item.bbm_subsidi_surat) || 0) + (parseInt(item.bbm_non_surat) || 0);
-        
-        return `
-            <tr>
-                <td>${item.tahun}</td>
-                <td class="text-end">${item.stblkk || 0}</td>
-                <td class="text-end">${item.pb || 0}</td>
-                <td class="text-end">${asuransi}</td>
-                <td class="text-end">${bbm}</td>
-            </tr>
-        `;
-    }).join('');
+
+        const tdTahun = document.createElement('td'); tdTahun.textContent = item.tahun; tr.appendChild(tdTahun);
+        const tdStbl = document.createElement('td'); tdStbl.className = 'text-end'; tdStbl.textContent = item.stblkk || 0; tr.appendChild(tdStbl);
+        const tdPb = document.createElement('td'); tdPb.className = 'text-end'; tdPb.textContent = item.pb || 0; tr.appendChild(tdPb);
+        const tdAs = document.createElement('td'); tdAs.className = 'text-end'; tdAs.textContent = asuransi; tr.appendChild(tdAs);
+        const tdBbm = document.createElement('td'); tdBbm.className = 'text-end'; tdBbm.textContent = bbm; tr.appendChild(tdBbm);
+
+        tbody.appendChild(tr);
+    });
 }
 
 // ==========================================

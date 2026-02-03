@@ -31,11 +31,15 @@ async function loadIkanData() {
 
     } catch (error) {
         console.error('Error:', error);
-        document.getElementById('tableIkanBody').innerHTML = `
-            <tr>
-                <td colspan="5" class="text-center text-danger">Error: ${error.message}</td>
-            </tr>
-        `;
+        const tbody = document.getElementById('tableIkanBody');
+        tbody.innerHTML = '';
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.setAttribute('colspan', '5');
+        td.className = 'text-center text-danger';
+        td.textContent = `Error: ${error.message}`;
+        tr.appendChild(td);
+        tbody.appendChild(tr);
     }
 }
 
@@ -76,32 +80,75 @@ function updateStatistics(data) {
 // ==========================================
 function displayGridView(data) {
     const gridDiv = document.getElementById('gridIkan');
-    
-    if (data.length === 0) {
-        gridDiv.innerHTML = '<div class="col-12 text-center text-muted">Tidak ada data ikan</div>';
+    gridDiv.innerHTML = '';
+    if (!data || data.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'col-12 text-center text-muted';
+        empty.textContent = 'Tidak ada data ikan';
+        gridDiv.appendChild(empty);
         return;
     }
 
-    gridDiv.innerHTML = data.map(item => {
-        const fotoHtml = item.foto 
-            ? `<img src="${item.foto}" alt="${item.nama_ikan}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px 8px 0 0;">`
-            : `<div style="width: 100%; height: 150px; background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); border-radius: 8px 8px 0 0; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">🐟</div>`;
-        
-        return `
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100" style="border: none; box-shadow: var(--shadow-md); transition: all 0.3s ease;">
-                    ${fotoHtml}
-                    <div class="card-body">
-                        <h5 class="card-title text-primary">${item.nama_ikan}</h5>
-                        <p class="card-text mb-2">
-                            <strong>${item.jumlah}</strong> <span class="text-muted">ekor</span>
-                        </p>
-                        <small class="text-muted">Input: ${formatDate(item.created_at)}</small>
-                    </div>
-                </div>
-            </div>
-        `;
-    }).join('');
+    data.forEach(item => {
+        const col = document.createElement('div');
+        col.className = 'col-md-6 col-lg-4 mb-4';
+
+        const card = document.createElement('div');
+        card.className = 'card h-100';
+        card.style.border = 'none';
+        card.style.boxShadow = 'var(--shadow-md)';
+        card.style.transition = 'all 0.3s ease';
+
+        if (item.foto) {
+            const img = document.createElement('img');
+            img.src = item.foto;
+            img.alt = item.nama_ikan || '';
+            img.style.width = '100%';
+            img.style.height = '150px';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '8px 8px 0 0';
+            card.appendChild(img);
+        } else {
+            const placeholder = document.createElement('div');
+            placeholder.style.width = '100%';
+            placeholder.style.height = '150px';
+            placeholder.style.background = 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)';
+            placeholder.style.borderRadius = '8px 8px 0 0';
+            placeholder.style.display = 'flex';
+            placeholder.style.alignItems = 'center';
+            placeholder.style.justifyContent = 'center';
+            placeholder.style.color = 'white';
+            placeholder.style.fontSize = '2rem';
+            placeholder.textContent = '🐟';
+            card.appendChild(placeholder);
+        }
+
+        const body = document.createElement('div');
+        body.className = 'card-body';
+        const h5 = document.createElement('h5');
+        h5.className = 'card-title text-primary';
+        h5.textContent = item.nama_ikan;
+        const p = document.createElement('p');
+        p.className = 'card-text mb-2';
+        const strong = document.createElement('strong');
+        strong.textContent = item.jumlah;
+        p.appendChild(strong);
+        const span = document.createElement('span');
+        span.className = 'text-muted';
+        span.textContent = ' ekor';
+        p.appendChild(span);
+        const small = document.createElement('small');
+        small.className = 'text-muted';
+        small.textContent = 'Input: ' + formatDate(item.created_at);
+
+        body.appendChild(h5);
+        body.appendChild(p);
+        body.appendChild(small);
+        card.appendChild(body);
+
+        col.appendChild(card);
+        gridDiv.appendChild(col);
+    });
 }
 
 // ==========================================
@@ -109,37 +156,68 @@ function displayGridView(data) {
 // ==========================================
 function displayIkanTable(data) {
     const tbody = document.getElementById('tableIkanBody');
-    
-    if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Tidak ada data ikan</td></tr>';
+    tbody.innerHTML = '';
+    if (!data || data.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.setAttribute('colspan','5');
+        td.className = 'text-center text-muted';
+        td.textContent = 'Tidak ada data ikan';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
         return;
     }
 
     const totalEkor = data.reduce((sum, item) => sum + parseInt(item.jumlah), 0);
 
-    tbody.innerHTML = data.map(item => {
-        const fotoHtml = item.foto 
-            ? `<img src="${item.foto}" alt="${item.nama_ikan}" style="max-width: 50px; max-height: 50px; border-radius: 4px;">`
-            : '<span class="badge bg-secondary">Tidak ada foto</span>';
-        
+    data.forEach(item => {
+        const tr = document.createElement('tr');
+
+        const tdFoto = document.createElement('td');
+        if (item.foto) {
+            const img = document.createElement('img');
+            img.src = item.foto;
+            img.alt = item.nama_ikan || '';
+            img.style.maxWidth = '50px';
+            img.style.maxHeight = '50px';
+            img.style.borderRadius = '4px';
+            tdFoto.appendChild(img);
+        } else {
+            const span = document.createElement('span');
+            span.className = 'badge bg-secondary';
+            span.textContent = 'Tidak ada foto';
+            tdFoto.appendChild(span);
+        }
+        tr.appendChild(tdFoto);
+
+        const tdNama = document.createElement('td');
+        const strong = document.createElement('strong');
+        strong.textContent = item.nama_ikan || '-';
+        tdNama.appendChild(strong);
+        tr.appendChild(tdNama);
+
+        const tdJumlah = document.createElement('td');
+        tdJumlah.className = 'text-end';
+        tdJumlah.textContent = item.jumlah;
+        tr.appendChild(tdJumlah);
+
+        const tdPersen = document.createElement('td');
+        tdPersen.className = 'text-end';
         const persentase = ((parseInt(item.jumlah) / totalEkor) * 100).toFixed(1);
-        
+        tdPersen.textContent = persentase + '%';
+        tr.appendChild(tdPersen);
+
+        const tdTanggal = document.createElement('td');
         const tanggal = new Date(item.created_at).toLocaleDateString('id-ID', {
             year: 'numeric',
             month: 'short',
             day: '2-digit'
         });
+        tdTanggal.textContent = tanggal;
+        tr.appendChild(tdTanggal);
 
-        return `
-            <tr>
-                <td>${fotoHtml}</td>
-                <td><strong>${item.nama_ikan}</strong></td>
-                <td class="text-end">${item.jumlah}</td>
-                <td class="text-end">${persentase}%</td>
-                <td>${tanggal}</td>
-            </tr>
-        `;
-    }).join('');
+        tbody.appendChild(tr);
+    });
 }
 
 // ==========================================

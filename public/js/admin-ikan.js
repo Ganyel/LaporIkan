@@ -38,34 +38,73 @@ function displayIkanTable(data) {
     const tbody = document.getElementById('tableIkanBody');
     
     if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Belum ada data ikan</td></tr>';
+        tbody.innerHTML = '';
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.setAttribute('colspan','5');
+        td.className = 'text-center text-muted';
+        td.textContent = 'Belum ada data ikan';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
         return;
     }
+    tbody.innerHTML = '';
+    data.forEach(item => {
+        const tr = document.createElement('tr');
 
-    tbody.innerHTML = data.map(item => {
-        const fotoHtml = item.foto 
-            ? `<img src="${item.foto}" alt="${item.nama_ikan}" style="max-width: 50px; max-height: 50px; border-radius: 4px;">`
-            : '<span class="badge bg-secondary">Tidak ada foto</span>';
-        
+        const tdFoto = document.createElement('td');
+        if (item.foto) {
+            const img = document.createElement('img');
+            img.src = item.foto;
+            img.alt = item.nama_ikan || '';
+            img.style.maxWidth = '50px';
+            img.style.maxHeight = '50px';
+            img.style.borderRadius = '4px';
+            tdFoto.appendChild(img);
+        } else {
+            const span = document.createElement('span');
+            span.className = 'badge bg-secondary';
+            span.textContent = 'Tidak ada foto';
+            tdFoto.appendChild(span);
+        }
+        tr.appendChild(tdFoto);
+
+        const tdNama = document.createElement('td');
+        const strong = document.createElement('strong');
+        strong.textContent = item.nama_ikan || '-';
+        tdNama.appendChild(strong);
+        tr.appendChild(tdNama);
+
+        const tdJumlah = document.createElement('td');
+        tdJumlah.className = 'text-end';
+        tdJumlah.textContent = (item.jumlah || 0) + ' ekor';
+        tr.appendChild(tdJumlah);
+
+        const tdTanggal = document.createElement('td');
         const tanggal = new Date(item.created_at).toLocaleDateString('id-ID', {
-            year: 'numeric',
-            month: 'short',
-            day: '2-digit'
+            year: 'numeric', month: 'short', day: '2-digit'
         });
+        tdTanggal.textContent = tanggal;
+        tr.appendChild(tdTanggal);
 
-        return `
-            <tr>
-                <td>${fotoHtml}</td>
-                <td><strong>${item.nama_ikan}</strong></td>
-                <td class="text-end">${item.jumlah} ekor</td>
-                <td>${tanggal}</td>
-                <td class="text-center">
-                    <button class="btn btn-primary btn-sm" onclick="editIkan(${item.id})">✎ Edit</button>
-                    <button class="btn btn-danger btn-sm ms-1" onclick="deleteIkan(${item.id})">🗑 Hapus</button>
-                </td>
-            </tr>
-        `;
-    }).join('');
+        const tdAction = document.createElement('td');
+        tdAction.className = 'text-center';
+        const btnEdit = document.createElement('button');
+        btnEdit.className = 'btn btn-primary btn-sm';
+        btnEdit.type = 'button';
+        btnEdit.textContent = '✎ Edit';
+        btnEdit.addEventListener('click', () => editIkan(item.id));
+        const btnDel = document.createElement('button');
+        btnDel.className = 'btn btn-danger btn-sm ms-1';
+        btnDel.type = 'button';
+        btnDel.textContent = '🗑 Hapus';
+        btnDel.addEventListener('click', () => deleteIkan(item.id));
+        tdAction.appendChild(btnEdit);
+        tdAction.appendChild(btnDel);
+        tr.appendChild(tdAction);
+
+        tbody.appendChild(tr);
+    });
 }
 
 // ==========================================
@@ -160,12 +199,22 @@ async function editIkan(id) {
         // Preview foto jika ada
         if (data.foto) {
             const previewDiv = document.getElementById('previewFoto');
-            previewDiv.innerHTML = `
-                <div class="mb-3">
-                    <label class="text-muted">Foto saat ini:</label>
-                    <img src="${data.foto}" alt="${data.nama_ikan}" style="max-width: 150px; max-height: 150px; border-radius: 4px; margin-top: 0.5rem;">
-                </div>
-            `;
+            previewDiv.innerHTML = '';
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+            const label = document.createElement('label');
+            label.className = 'text-muted';
+            label.textContent = 'Foto saat ini:';
+            const img = document.createElement('img');
+            img.src = data.foto;
+            img.alt = data.nama_ikan || '';
+            img.style.maxWidth = '150px';
+            img.style.maxHeight = '150px';
+            img.style.borderRadius = '4px';
+            img.style.marginTop = '0.5rem';
+            wrapper.appendChild(label);
+            wrapper.appendChild(img);
+            previewDiv.appendChild(wrapper);
         }
 
         // Scroll ke form
@@ -211,7 +260,7 @@ async function deleteIkan(id) {
 function resetFormIkan() {
     document.getElementById('formIkan').reset();
     document.getElementById('formIkan').removeAttribute('data-id-edit');
-    document.getElementById('previewFoto').innerHTML = '';
+    document.getElementById('previewFoto').textContent = '';
 }
 
 // ==========================================
@@ -223,12 +272,22 @@ function previewFoto(event) {
         const reader = new FileReader();
         reader.onload = function (e) {
             const previewDiv = document.getElementById('previewFoto');
-            previewDiv.innerHTML = `
-                <div class="mb-3">
-                    <label class="text-muted">Preview Foto:</label>
-                    <img src="${e.target.result}" alt="preview" style="max-width: 150px; max-height: 150px; border-radius: 4px; margin-top: 0.5rem;">
-                </div>
-            `;
+            previewDiv.innerHTML = '';
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3';
+            const label = document.createElement('label');
+            label.className = 'text-muted';
+            label.textContent = 'Preview Foto:';
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.alt = 'preview';
+            img.style.maxWidth = '150px';
+            img.style.maxHeight = '150px';
+            img.style.borderRadius = '4px';
+            img.style.marginTop = '0.5rem';
+            wrapper.appendChild(label);
+            wrapper.appendChild(img);
+            previewDiv.appendChild(wrapper);
         };
         reader.readAsDataURL(file);
     }
@@ -239,22 +298,27 @@ function previewFoto(event) {
 // ==========================================
 function showAlert(message, type = 'info') {
     const alertContainer = document.getElementById('alertContainer');
-    const alertId = 'alert-' + Date.now();
-    
-    const alertHtml = `
-        <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show" role="alert">
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    `;
+    const wrapper = document.createElement('div');
+    wrapper.className = `alert alert-${type} alert-dismissible fade show`;
+    wrapper.setAttribute('role', 'alert');
 
-    alertContainer.insertAdjacentHTML('beforeend', alertHtml);
+    const text = document.createElement('span');
+    text.textContent = message;
+    wrapper.appendChild(text);
 
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        const element = document.getElementById(alertId);
-        if (element) {
-            element.remove();
-        }
-    }, 5000);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn-close';
+    btn.setAttribute('data-bs-dismiss','alert');
+    btn.setAttribute('aria-label','Close');
+    wrapper.appendChild(btn);
+
+    alertContainer.appendChild(wrapper);
+
+    if (type !== 'danger') {
+        setTimeout(() => {
+            const el = wrapper;
+            if (el && el.parentNode) el.parentNode.removeChild(el);
+        }, 5000);
+    }
 }
