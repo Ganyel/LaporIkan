@@ -188,7 +188,7 @@ function displayIkanTable(data) {
         const strongJumlah = document.createElement('strong');
         strongJumlah.textContent = item.jumlah || 0;
         tdJumlah.appendChild(strongJumlah);
-        tdJumlah.appendChild(document.createTextNode(' ekor'));
+        tdJumlah.appendChild(document.createTextNode(' ton'));
         tr.appendChild(tdJumlah);
 
         const tdTanggal = document.createElement('td');
@@ -439,7 +439,7 @@ function updatePreview() {
     countDiv.textContent = jumlahIkan;
     const small = document.createElement('small');
     small.className = 'text-muted';
-    small.textContent = 'ekor ikan';
+    small.textContent = 'ton ikan';
     info.appendChild(icon);
     info.appendChild(h5);
     info.appendChild(countDiv);

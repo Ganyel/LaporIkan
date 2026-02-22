@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Google Sheets - LaporIkan</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="bg-light">
+<body class="bg-light page-admin">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
             <a class="navbar-brand" href="/">🐟 LaporIkan</a>
@@ -191,9 +192,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="card">
-                                    <div class="card-body">
                                         <h6 class="card-title">📤 Import dari Sheet ke Aplikasi</h6>
                                         <p class="text-muted small">Ambil data dari Google Sheets ke database aplikasi</p>
                                         <button class="btn btn-info w-100" onclick="importFromSheet()">
@@ -233,12 +231,79 @@
         </div>
     </div>
 
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-col footer-brand">
+                <div class="footer-brand-row">
+                    <div class="footer-logos">
+                        <img src="/images/Logo2.png" alt="Logo PPN Tegalsari 2" class="footer-logo">
+                        <img src="/images/Logo1.png" alt="Logo PPN Tegalsari" class="footer-logo">
+                    </div>
+                    <div>
+                        <div class="footer-title">PELABUHAN PERIKANAN NUSANTARA</div>
+                        <div class="footer-subtitle">TEGALSARI</div>
+                    </div>
+                </div>
+                <p class="footer-text">Jl. Blanak No.10C, Tegalsari, Kec. Tegal Bar., Kota Tegal, Jawa Tengah 52111</p>
+            </div>
+            <div class="footer-col">
+                <div class="footer-title">Kontak</div>
+                <ul class="footer-list">
+                    <li>Telp: (0283) 358787</li>
+                    <li>Fax: (0283) 321366</li>
+                    <li>Email: p3tegalsari@gmail.com</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <div class="footer-title">Media Sosial</div>
+                <div class="footer-social">
+                    <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="#" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+                    <a href="tel:+62283358787" aria-label="Telepon"><i class="bi bi-telephone"></i></a>
+                    <a href="mailto:p3tegalsari@gmail.com" aria-label="Email"><i class="bi bi-envelope"></i></a>
+                </div>
+            </div>
+            <div class="footer-col footer-map">
+                <div class="footer-title">Lokasi</div>
+                <div class="footer-map-embed">
+                    <iframe
+                        title="PPN Tegalsari Map"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        src="https://www.google.com/maps?q=Jl.%20Blanak%20No.10C%2C%20Tegalsari%2C%20Kec.%20Tegal%20Bar.%2C%20Kota%20Tegal%2C%20Jawa%20Tengah%2052111&output=embed">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <span id="footerYear"></span> PPN Tegalsari. Semua hak dilindungi.</p>
+        </div>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        function getAdminToken() {
+            return localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+        }
+
+        function fetchWithAuth(url, options = {}) {
+            const token = getAdminToken();
+            if (!token) {
+                window.location.href = '/login';
+                return Promise.reject(new Error('Token tidak ditemukan'));
+            }
+            const headers = {
+                ...(options.headers || {}),
+                Authorization: `Bearer ${token}`
+            };
+            return fetch(url, { ...options, headers });
+        }
+
         // Check connection status
         async function checkConnectionStatus() {
             try {
-                const response = await fetch('/api/data-sheet/laporan-harian');
+                const response = await fetchWithAuth('/api/data-sheet/laporan-harian');
                 const result = await response.json();
 
                 if (result.success) {
@@ -256,7 +321,7 @@
                     p.textContent = 'Data: ' + (result.data ? result.data.length : 0) + ' baris';
                     sheetInfo.appendChild(p);
                 } else {
-                    throw new Error('Koneksi gagal');
+                    throw new Error(result.error || result.message || 'Koneksi gagal');
                 }
             } catch (error) {
                 const statusEl = document.getElementById('connectionStatus');
@@ -271,81 +336,105 @@
         // Refresh laporan data
         async function refreshLaporanData() {
             try {
-                const response = await fetch('/api/data-sheet/laporan-harian');
+                const response = await fetchWithAuth('/api/data-sheet/laporan-harian');
                 const result = await response.json();
 
-                if (result.success) {
-                    const tbody = document.getElementById('laporanTableBody');
-                    tbody.innerHTML = '';
+                if (!result.success) {
+                    throw new Error(result.error || result.message || 'Gagal mengambil data');
+                }
 
-                    if (result.data && result.data.length > 0) {
-                        result.data.forEach((row, index) => {
-                            const tr = document.createElement('tr');
-                            const tdIndex = document.createElement('td'); tdIndex.textContent = index + 1; tr.appendChild(tdIndex);
-                            const td0 = document.createElement('td'); td0.textContent = row[0] || '-'; tr.appendChild(td0);
-                            const td1 = document.createElement('td'); td1.textContent = row[1] || '-'; tr.appendChild(td1);
-                            const td2 = document.createElement('td'); const small2 = document.createElement('small'); small2.textContent = row[2] || '-'; td2.appendChild(small2); tr.appendChild(td2);
-                            const td3 = document.createElement('td'); const small3 = document.createElement('small'); small3.textContent = row[3] || '-'; td3.appendChild(small3); tr.appendChild(td3);
-                            const td4 = document.createElement('td'); td4.textContent = row[4] || '-'; tr.appendChild(td4);
-                            const tdActions = document.createElement('td');
-                            const btnEdit = document.createElement('button'); btnEdit.className = 'btn btn-sm btn-warning'; btnEdit.textContent = 'Edit';
-                            const btnDel = document.createElement('button'); btnDel.className = 'btn btn-sm btn-danger'; btnDel.textContent = 'Hapus';
-                            tdActions.appendChild(btnEdit); tdActions.appendChild(btnDel); tr.appendChild(tdActions);
-                            tbody.appendChild(tr);
-                        });
-                    } else {
-                        const trEmpty = document.createElement('tr');
-                        const tdEmpty = document.createElement('td');
-                        tdEmpty.setAttribute('colspan','7');
-                        tdEmpty.className = 'text-center text-muted';
-                        tdEmpty.textContent = 'Tidak ada data';
-                        trEmpty.appendChild(tdEmpty);
-                        tbody.appendChild(trEmpty);
-                    }
+                const tbody = document.getElementById('laporanTableBody');
+                tbody.innerHTML = '';
+
+                if (result.data && result.data.length > 0) {
+                    result.data.forEach((row, index) => {
+                        const tr = document.createElement('tr');
+                        const tdIndex = document.createElement('td'); tdIndex.textContent = index + 1; tr.appendChild(tdIndex);
+                        const td0 = document.createElement('td'); td0.textContent = row[0] || '-'; tr.appendChild(td0);
+                        const td1 = document.createElement('td'); td1.textContent = row[1] || '-'; tr.appendChild(td1);
+                        const td2 = document.createElement('td'); const small2 = document.createElement('small'); small2.textContent = row[2] || '-'; td2.appendChild(small2); tr.appendChild(td2);
+                        const td3 = document.createElement('td'); const small3 = document.createElement('small'); small3.textContent = row[3] || '-'; td3.appendChild(small3); tr.appendChild(td3);
+                        const td4 = document.createElement('td'); td4.textContent = row[4] || '-'; tr.appendChild(td4);
+                        const tdActions = document.createElement('td');
+                        const btnEdit = document.createElement('button'); btnEdit.className = 'btn btn-sm btn-warning'; btnEdit.textContent = 'Edit';
+                        const btnDel = document.createElement('button'); btnDel.className = 'btn btn-sm btn-danger'; btnDel.textContent = 'Hapus';
+                        tdActions.appendChild(btnEdit); tdActions.appendChild(btnDel); tr.appendChild(tdActions);
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    const trEmpty = document.createElement('tr');
+                    const tdEmpty = document.createElement('td');
+                    tdEmpty.setAttribute('colspan','7');
+                    tdEmpty.className = 'text-center text-muted';
+                    tdEmpty.textContent = 'Tidak ada data';
+                    trEmpty.appendChild(tdEmpty);
+                    tbody.appendChild(trEmpty);
                 }
             } catch (error) {
-                alert('Error: ' + error.message);
+                const tbody = document.getElementById('laporanTableBody');
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    const tr = document.createElement('tr');
+                    const td = document.createElement('td');
+                    td.setAttribute('colspan','7');
+                    td.className = 'text-center text-danger';
+                    td.textContent = 'Gagal mengambil data: ' + error.message;
+                    tr.appendChild(td);
+                    tbody.appendChild(tr);
+                }
             }
         }
 
         // Refresh ikan data
         async function refreshIkanData() {
             try {
-                const response = await fetch('/api/data-sheet/ikan');
+                const response = await fetchWithAuth('/api/data-sheet/ikan');
                 const result = await response.json();
 
-                if (result.success) {
-                    const tbody = document.getElementById('ikanTableBody');
-                    tbody.innerHTML = '';
+                if (!result.success) {
+                    throw new Error(result.error || result.message || 'Gagal mengambil data');
+                }
 
-                    if (result.data && result.data.length > 0) {
-                        result.data.forEach((row, index) => {
-                            const tr = document.createElement('tr');
-                            const tdIndex = document.createElement('td'); tdIndex.textContent = index + 1; tr.appendChild(tdIndex);
-                            const td0 = document.createElement('td'); td0.textContent = row[0] || '-'; tr.appendChild(td0);
-                            const td1 = document.createElement('td'); td1.textContent = row[1] || '-'; tr.appendChild(td1);
-                            const td2 = document.createElement('td'); td2.textContent = row[2] || '-'; tr.appendChild(td2);
-                            const td3 = document.createElement('td'); td3.textContent = row[3] || '-'; tr.appendChild(td3);
-                            const td4 = document.createElement('td'); td4.textContent = row[4] || '-'; tr.appendChild(td4);
-                            const td5 = document.createElement('td'); td5.textContent = row[5] || '-'; tr.appendChild(td5);
-                            const tdActions = document.createElement('td');
-                            const btnEdit = document.createElement('button'); btnEdit.className = 'btn btn-sm btn-warning'; btnEdit.textContent = 'Edit';
-                            const btnDel = document.createElement('button'); btnDel.className = 'btn btn-sm btn-danger'; btnDel.textContent = 'Hapus';
-                            tdActions.appendChild(btnEdit); tdActions.appendChild(btnDel); tr.appendChild(tdActions);
-                            tbody.appendChild(tr);
-                        });
-                    } else {
-                        const trEmpty = document.createElement('tr');
-                        const tdEmpty = document.createElement('td');
-                        tdEmpty.setAttribute('colspan','8');
-                        tdEmpty.className = 'text-center text-muted';
-                        tdEmpty.textContent = 'Tidak ada data';
-                        trEmpty.appendChild(tdEmpty);
-                        tbody.appendChild(trEmpty);
-                    }
+                const tbody = document.getElementById('ikanTableBody');
+                tbody.innerHTML = '';
+
+                if (result.data && result.data.length > 0) {
+                    result.data.forEach((row, index) => {
+                        const tr = document.createElement('tr');
+                        const tdIndex = document.createElement('td'); tdIndex.textContent = index + 1; tr.appendChild(tdIndex);
+                        const td0 = document.createElement('td'); td0.textContent = row[0] || '-'; tr.appendChild(td0);
+                        const td1 = document.createElement('td'); td1.textContent = row[1] || '-'; tr.appendChild(td1);
+                        const td2 = document.createElement('td'); td2.textContent = row[2] || '-'; tr.appendChild(td2);
+                        const td3 = document.createElement('td'); td3.textContent = row[3] || '-'; tr.appendChild(td3);
+                        const td4 = document.createElement('td'); td4.textContent = row[4] || '-'; tr.appendChild(td4);
+                        const td5 = document.createElement('td'); td5.textContent = row[5] || '-'; tr.appendChild(td5);
+                        const tdActions = document.createElement('td');
+                        const btnEdit = document.createElement('button'); btnEdit.className = 'btn btn-sm btn-warning'; btnEdit.textContent = 'Edit';
+                        const btnDel = document.createElement('button'); btnDel.className = 'btn btn-sm btn-danger'; btnDel.textContent = 'Hapus';
+                        tdActions.appendChild(btnEdit); tdActions.appendChild(btnDel); tr.appendChild(tdActions);
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    const trEmpty = document.createElement('tr');
+                    const tdEmpty = document.createElement('td');
+                    tdEmpty.setAttribute('colspan','8');
+                    tdEmpty.className = 'text-center text-muted';
+                    tdEmpty.textContent = 'Tidak ada data';
+                    trEmpty.appendChild(tdEmpty);
+                    tbody.appendChild(trEmpty);
                 }
             } catch (error) {
-                alert('Error: ' + error.message);
+                const tbody = document.getElementById('ikanTableBody');
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    const tr = document.createElement('tr');
+                    const td = document.createElement('td');
+                    td.setAttribute('colspan','8');
+                    td.className = 'text-center text-danger';
+                    td.textContent = 'Gagal mengambil data: ' + error.message;
+                    tr.appendChild(td);
+                    tbody.appendChild(tr);
+                }
             }
         }
 
@@ -354,7 +443,7 @@
             if (!confirm('Apakah Anda yakin ingin menghapus semua data di sheet ini?')) return;
 
             try {
-                const response = await fetch('/api/data-sheet/clear/Laporan%20Harian', {
+                const response = await fetchWithAuth('/api/data-sheet/clear/Laporan%20Harian', {
                     method: 'DELETE'
                 });
 
@@ -376,7 +465,7 @@
             if (!confirm('Apakah Anda yakin ingin menghapus semua data di sheet ini?')) return;
 
             try {
-                const response = await fetch('/api/data-sheet/clear/Data%20Ikan', {
+                const response = await fetchWithAuth('/api/data-sheet/clear/Data%20Ikan', {
                     method: 'DELETE'
                 });
 
@@ -406,7 +495,7 @@
                     '/api/data-sheet/sync-laporan-harian' : 
                     '/api/data-sheet/sync-ikan';
 
-                const response = await fetch(endpoint, {
+                const response = await fetchWithAuth(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -438,6 +527,11 @@
             refreshLaporanData();
             refreshIkanData();
         });
+
+        const footerYear = document.getElementById('footerYear');
+        if (footerYear) {
+            footerYear.textContent = new Date().getFullYear();
+        }
     </script>
 </body>
 </html>

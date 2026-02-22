@@ -2,7 +2,15 @@
 // INITIALIZE
 // ==========================================
 document.addEventListener('DOMContentLoaded', function () {
-    loadLaporanData();
+    const token = getAdminToken();
+    if (!token) {
+        window.location.href = '/login';
+        return;
+    }
+    const hasLaporanTable = document.getElementById('tableLaporanBody');
+    if (hasLaporanTable) {
+        loadLaporanData();
+    }
     
     // Setup navbar
     const username = localStorage.getItem('adminUsername') || 'Admin';
@@ -12,12 +20,29 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+function getAdminToken() {
+    return localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+}
+
+function getAuthHeaders() {
+    const token = getAdminToken();
+    return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 // ==========================================
 // LOAD LAPORAN DATA
 // ==========================================
 async function loadLaporanData() {
     try {
-        const response = await fetch('/api/laporan-harian');
+        const tableEl = document.getElementById('tableLaporanBody');
+        if (!tableEl) {
+            return;
+        }
+        const response = await fetch('/api/laporan-harian', {
+            headers: {
+                ...getAuthHeaders()
+            }
+        });
         const result = await response.json();
 
         if (!result.success) {
@@ -38,6 +63,10 @@ async function loadLaporanData() {
 // ==========================================
 function displayLaporanTable(data) {
     const tbody = document.getElementById('tableLaporanBody');
+
+    if (!tbody) {
+        return;
+    }
 
     // Clear existing
     tbody.innerHTML = '';
@@ -82,13 +111,13 @@ function displayLaporanTable(data) {
         btnEdit.className = 'btn btn-primary btn-sm';
         btnEdit.textContent = '✎ Edit';
         btnEdit.type = 'button';
-        btnEdit.addEventListener('click', () => editData(item.tanggal));
+        btnEdit.addEventListener('click', () => editData(normalizeTanggal(item.tanggal)));
 
         const btnDelete = document.createElement('button');
         btnDelete.className = 'btn btn-danger btn-sm ms-1';
         btnDelete.textContent = '🗑 Hapus';
         btnDelete.type = 'button';
-        btnDelete.addEventListener('click', () => deleteData(item.tanggal));
+        btnDelete.addEventListener('click', () => deleteData(normalizeTanggal(item.tanggal)));
 
         tdAction.appendChild(btnEdit);
         tdAction.appendChild(btnDelete);
@@ -108,10 +137,10 @@ async function submitForm(event) {
         const tanggal = document.getElementById('tanggal').value;
         const stblkk = parseInt(document.getElementById('stblkk').value) || 0;
         const pb = parseInt(document.getElementById('pb').value) || 0;
-        const asuransiBaru = parseInt(document.getElementById('asuransiBaru').value) || 0;
-        const asuransiLama = parseInt(document.getElementById('asuransiLama').value) || 0;
-        const bbmSubsidi = parseInt(document.getElementById('bbmSubsidi').value) || 0;
-        const bbmNonSurat = parseInt(document.getElementById('bbmNonSurat').value) || 0;
+        const asuransiBaru = parseInt(document.getElementById('asuransi_baru').value) || 0;
+        const asuransiLama = parseInt(document.getElementById('asuransi_lama').value) || 0;
+        const bbmSubsidi = parseInt(document.getElementById('bbm_subsidi_surat').value) || 0;
+        const bbmNonSurat = parseInt(document.getElementById('bbm_non_surat').value) || 0;
 
         if (!tanggal) {
             alert('Tanggal harus diisi!');
@@ -131,7 +160,8 @@ async function submitForm(event) {
         const response = await fetch('/api/laporan-harian', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
             },
             body: JSON.stringify(payload)
         });
@@ -157,7 +187,11 @@ async function submitForm(event) {
 // ==========================================
 async function editData(tanggal) {
     try {
-        const response = await fetch(`/api/laporan-harian/detail/${tanggal}`);
+        const response = await fetch(`/api/laporan-harian/detail/${encodeURIComponent(tanggal)}`, {
+            headers: {
+                ...getAuthHeaders()
+            }
+        });
         const result = await response.json();
 
         if (!result.success) {
@@ -167,13 +201,13 @@ async function editData(tanggal) {
         const data = result.data;
 
         // Populate form
-        document.getElementById('tanggal').value = data.tanggal;
+        document.getElementById('tanggal').value = normalizeTanggal(data.tanggal);
         document.getElementById('stblkk').value = data.stblkk || 0;
         document.getElementById('pb').value = data.pb || 0;
-        document.getElementById('asuransiBaru').value = data.asuransi_baru || 0;
-        document.getElementById('asuransiLama').value = data.asuransi_lama || 0;
-        document.getElementById('bbmSubsidi').value = data.bbm_subsidi_surat || 0;
-        document.getElementById('bbmNonSurat').value = data.bbm_non_surat || 0;
+        document.getElementById('asuransi_baru').value = data.asuransi_baru || 0;
+        document.getElementById('asuransi_lama').value = data.asuransi_lama || 0;
+        document.getElementById('bbm_subsidi_surat').value = data.bbm_subsidi_surat || 0;
+        document.getElementById('bbm_non_surat').value = data.bbm_non_surat || 0;
 
         // Scroll to form
         document.getElementById('formLaporan').scrollIntoView({ behavior: 'smooth' });
@@ -193,8 +227,11 @@ async function deleteData(tanggal) {
     }
 
     try {
-        const response = await fetch(`/api/laporan-harian/${tanggal}`, {
-            method: 'DELETE'
+        const response = await fetch(`/api/laporan-harian/${encodeURIComponent(tanggal)}` ,{
+            method: 'DELETE',
+            headers: {
+                ...getAuthHeaders()
+            }
         });
 
         const result = await response.json();
@@ -217,6 +254,9 @@ async function deleteData(tanggal) {
 // ==========================================
 function showAlert(message, type = 'info') {
     const alertContainer = document.getElementById('alertContainer');
+    if (!alertContainer) {
+        return;
+    }
     const wrapper = document.createElement('div');
     wrapper.className = `alert alert-${type} alert-dismissible fade show`;
     wrapper.setAttribute('role', 'alert');
@@ -253,4 +293,29 @@ function formatDate(dateString) {
         month: 'short',
         day: '2-digit'
     });
+}
+
+function normalizeTanggal(value) {
+    if (!value) return value;
+    if (typeof value === 'string') {
+        const trimmed = value.trim();
+        const match = trimmed.match(/^\d{4}-\d{2}-\d{2}/);
+        if (match) return match[0];
+        const parsed = new Date(trimmed);
+        if (!Number.isNaN(parsed.getTime())) {
+            return formatLocalDate(parsed);
+        }
+        return trimmed;
+    }
+    if (value instanceof Date) {
+        return formatLocalDate(value);
+    }
+    return value;
+}
+
+function formatLocalDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }

@@ -36,6 +36,18 @@ CREATE TABLE IF NOT EXISTS ikan (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
+-- Tabel: admin_users
+-- =====================================================
+CREATE TABLE IF NOT EXISTS admin_users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password_hash CHAR(64) NOT NULL,
+    is_active TINYINT(1) DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
 -- Sample Data (opsional, untuk testing)
 -- =====================================================
 INSERT INTO laporan_harian (tanggal, stblkk, pb, asuransi_baru, asuransi_lama, bbm_subsidi_surat, bbm_non_surat)
@@ -64,3 +76,7 @@ VALUES
 ('Ikan Patin', 120),
 ('Ikan Mujair', 180),
 ('Ikan Tawes', 90);
+
+INSERT INTO admin_users (username, password_hash, is_active)
+VALUES ('p3tegalsari@gmail.com', SHA2('ppntegalsari', 256), 1)
+ON DUPLICATE KEY UPDATE username = username;

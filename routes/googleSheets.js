@@ -1,6 +1,74 @@
 const express = require('express');
 const router = express.Router();
 const googleSheetsAPI = require('../googleSheets');
+const fs = require('fs');
+const path = require('path');
+const adminAuth = require('../middleware/adminAuth');
+
+router.use(adminAuth);
+
+function extractSpreadsheetId(input) {
+    if (!input) return '';
+    const trimmed = String(input).trim();
+    const urlMatch = trimmed.match(/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+    if (urlMatch && urlMatch[1]) return urlMatch[1];
+    const idMatch = trimmed.match(/^[a-zA-Z0-9-_]{15,}$/);
+    if (idMatch) return trimmed;
+    return '';
+}
+
+function upsertEnvValue(filePath, key, value) {
+    let envContent = '';
+    if (fs.existsSync(filePath)) {
+        envContent = fs.readFileSync(filePath, 'utf-8');
+    }
+
+    const line = `${key}=${value}`;
+    if (envContent.match(new RegExp(`^${key}=`, 'm'))) {
+        envContent = envContent.replace(new RegExp(`^${key}=.*$`, 'm'), line);
+    } else {
+        envContent = envContent.trimEnd() + (envContent.endsWith('\n') || envContent.length === 0 ? '' : '\n') + line + '\n';
+    }
+
+    fs.writeFileSync(filePath, envContent, 'utf-8');
+}
+
+// Update Spreadsheet ID from Admin UI
+router.post('/config', async (req, res) => {
+    try {
+        const { sheetUrl, sheetId } = req.body || {};
+        const extractedId = extractSpreadsheetId(sheetId || sheetUrl);
+
+        if (!extractedId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Spreadsheet ID/URL tidak valid'
+            });
+        }
+
+        const envPath = path.join(__dirname, '..', '.env');
+        upsertEnvValue(envPath, 'GOOGLE_SPREADSHEET_ID', extractedId);
+
+        process.env.GOOGLE_SPREADSHEET_ID = extractedId;
+        googleSheetsAPI.spreadsheetId = extractedId;
+        if (!googleSheetsAPI.sheets && typeof googleSheetsAPI.initAuth === 'function') {
+            googleSheetsAPI.initAuth();
+        }
+
+        return res.json({
+            success: true,
+            message: 'Spreadsheet ID berhasil disimpan',
+            data: { spreadsheetId: extractedId }
+        });
+    } catch (error) {
+        console.error('Error update config:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Gagal menyimpan Spreadsheet ID',
+            error: error.message
+        });
+    }
+});
 
 // Route untuk sync laporan harian ke Google Sheets
 router.post('/sync-laporan-harian', async (req, res) => {

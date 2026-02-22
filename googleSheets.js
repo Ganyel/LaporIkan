@@ -31,8 +31,11 @@ class GoogleSheetsAPI {
 
     async appendData(range, values) {
         try {
-            if (!this.sheets || !this.spreadsheetId) {
-                throw new Error('Google Sheets API tidak terinisialisasi');
+            if (!this.spreadsheetId || this.spreadsheetId === 'your_spreadsheet_id_here') {
+                throw new Error('GOOGLE_SPREADSHEET_ID belum diisi di file .env');
+            }
+            if (!this.sheets) {
+                throw new Error('Google Sheets API tidak terinisialisasi (service-account.json?)');
             }
 
             const response = await this.sheets.spreadsheets.values.append({
@@ -53,8 +56,11 @@ class GoogleSheetsAPI {
 
     async getData(range) {
         try {
-            if (!this.sheets || !this.spreadsheetId) {
-                throw new Error('Google Sheets API tidak terinisialisasi');
+            if (!this.spreadsheetId || this.spreadsheetId === 'your_spreadsheet_id_here') {
+                throw new Error('GOOGLE_SPREADSHEET_ID belum diisi di file .env');
+            }
+            if (!this.sheets) {
+                throw new Error('Google Sheets API tidak terinisialisasi (service-account.json?)');
             }
 
             const response = await this.sheets.spreadsheets.values.get({
@@ -71,8 +77,11 @@ class GoogleSheetsAPI {
 
     async updateData(range, values) {
         try {
-            if (!this.sheets || !this.spreadsheetId) {
-                throw new Error('Google Sheets API tidak terinisialisasi');
+            if (!this.spreadsheetId || this.spreadsheetId === 'your_spreadsheet_id_here') {
+                throw new Error('GOOGLE_SPREADSHEET_ID belum diisi di file .env');
+            }
+            if (!this.sheets) {
+                throw new Error('Google Sheets API tidak terinisialisasi (service-account.json?)');
             }
 
             const response = await this.sheets.spreadsheets.values.update({
@@ -93,8 +102,11 @@ class GoogleSheetsAPI {
 
     async clearData(range) {
         try {
-            if (!this.sheets || !this.spreadsheetId) {
-                throw new Error('Google Sheets API tidak terinisialisasi');
+            if (!this.spreadsheetId || this.spreadsheetId === 'your_spreadsheet_id_here') {
+                throw new Error('GOOGLE_SPREADSHEET_ID belum diisi di file .env');
+            }
+            if (!this.sheets) {
+                throw new Error('Google Sheets API tidak terinisialisasi (service-account.json?)');
             }
 
             const response = await this.sheets.spreadsheets.values.clear({
@@ -111,8 +123,11 @@ class GoogleSheetsAPI {
 
     async batchUpdate(requests) {
         try {
-            if (!this.sheets || !this.spreadsheetId) {
-                throw new Error('Google Sheets API tidak terinisialisasi');
+            if (!this.spreadsheetId || this.spreadsheetId === 'your_spreadsheet_id_here') {
+                throw new Error('GOOGLE_SPREADSHEET_ID belum diisi di file .env');
+            }
+            if (!this.sheets) {
+                throw new Error('Google Sheets API tidak terinisialisasi (service-account.json?)');
             }
 
             const response = await this.sheets.spreadsheets.batchUpdate({
@@ -131,8 +146,11 @@ class GoogleSheetsAPI {
 
     async createSheet(sheetTitle) {
         try {
-            if (!this.sheets || !this.spreadsheetId) {
-                throw new Error('Google Sheets API tidak terinisialisasi');
+            if (!this.spreadsheetId || this.spreadsheetId === 'your_spreadsheet_id_here') {
+                throw new Error('GOOGLE_SPREADSHEET_ID belum diisi di file .env');
+            }
+            if (!this.sheets) {
+                throw new Error('Google Sheets API tidak terinisialisasi (service-account.json?)');
             }
 
             const response = await this.sheets.spreadsheets.batchUpdate({

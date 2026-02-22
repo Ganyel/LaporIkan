@@ -7,17 +7,21 @@
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
+<body class="page-ikan">
     <!-- Header -->
     <header class="ppn-header">
         <div class="container-fluid">
             <a href="/" class="header-link">
                 <div class="header-content">
                     <div class="logo-section">
-                        <img src="/images/logo.png" alt="Logo PPN Tegalsari" class="ppn-logo">
+                        <div class="logo-group">
+                            <img src="/images/Logo2.png" alt="Logo PPN Tegalsari 2" class="ppn-logo">
+                            <img src="/images/Logo1.png" alt="Logo PPN Tegalsari" class="ppn-logo">
+                        </div>
                     </div>
                     <div class="institution-section">
                         <h1>PELABUHAN PERIKANAN NUSANTARA</h1>
@@ -29,9 +33,9 @@
     </header>
 
     <!-- Navigation Menu -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-modern">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">PPN Tegalsari</a>
+            <a class="navbar-brand" href="/">PPN Tegalsari<small>Sistem Pelaporan Harian</small></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -50,7 +54,7 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/login">Login</a>
+                        <a class="nav-link login-link" href="/login">Login</a>
                     </li>
                 </ul>
             </div>
@@ -61,34 +65,46 @@
     <div class="container-main">
         <!-- Page Header -->
         <div class="page-header">
-            <h1>🐟 Pelaporan Ikan</h1>
+            <h1>Pelaporan Ikan</h1>
             <p>Data daftar ikan di PPN Tegalsari</p>
         </div>
 
         <!-- Statistics Cards -->
-        <div class="row mb-4">
+        <div class="row mb-4 stats-compact">
             <div class="col-md-6 col-lg-3">
-                <div class="stat-card primary">
-                    <div class="stat-card-label">Total Jenis Ikan</div>
-                    <div class="stat-card-value" id="statJenis">0</div>
+                <div class="stat-card primary stat-card-modern">
+                    <div class="stat-card-icon">🐟</div>
+                    <div>
+                        <div class="stat-card-label">Total Jenis Ikan</div>
+                        <div class="stat-card-value" id="statJenis">0</div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="stat-card success">
-                    <div class="stat-card-label">Total Ekor Ikan</div>
-                    <div class="stat-card-value" id="statTotal">0</div>
+                <div class="stat-card success stat-card-modern">
+                    <div class="stat-card-icon">📦</div>
+                    <div>
+                        <div class="stat-card-label">Total Ton Ikan</div>
+                        <div class="stat-card-value" id="statTotal">0</div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="stat-card info">
-                    <div class="stat-card-label">Rata-rata per Jenis</div>
-                    <div class="stat-card-value" id="statRata">0</div>
+                <div class="stat-card info stat-card-modern">
+                    <div class="stat-card-icon">📊</div>
+                    <div>
+                        <div class="stat-card-label">Rata-rata per Jenis</div>
+                        <div class="stat-card-value" id="statRata">0</div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="stat-card warning">
-                    <div class="stat-card-label">Jenis Terbanyak</div>
-                    <div class="stat-card-value" id="statTerbanyak" style="font-size: 1rem;">-</div>
+                <div class="stat-card warning stat-card-modern">
+                    <div class="stat-card-icon">⭐</div>
+                    <div>
+                        <div class="stat-card-label">Jenis Terbanyak</div>
+                        <div class="stat-card-value" id="statTerbanyak" style="font-size: 1rem;">-</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -98,8 +114,8 @@
             <div class="col-lg-6">
                 <div class="chart-container">
                     <div class="chart-title">
-                        📊 Grafik Perbandingan Jumlah Ikan
-                        <small>Jumlah ekor per jenis ikan</small>
+                        Grafik Perbandingan Jumlah Ikan
+                        <small>Jumlah ton per jenis ikan</small>
                     </div>
                     <canvas id="chartIkan" class="chart-canvas"></canvas>
                 </div>
@@ -107,7 +123,7 @@
             <div class="col-lg-6">
                 <div class="chart-container">
                     <div class="chart-title">
-                        🥧 Grafik Proporsi Ikan
+                        Grafik Proporsi Ikan
                         <small>Persentase per jenis ikan</small>
                     </div>
                     <canvas id="chartProporsi" class="chart-canvas"></canvas>
@@ -117,7 +133,7 @@
 
         <!-- Filter Section -->
         <div class="filter-section">
-            <div class="filter-title">🔍 Filter & Pencarian</div>
+            <div class="filter-title">Filter & Pencarian</div>
             <div class="filter-controls">
                 <div class="filter-control">
                     <label for="searchIkan">Cari Nama Ikan</label>
@@ -132,49 +148,104 @@
                     </select>
                 </div>
                 <div class="filter-control">
-                    <button class="btn btn-primary w-100 fw-bold" onclick="applySearch()">🔎 Cari</button>
+                    <button class="btn btn-primary w-100 fw-bold" onclick="applySearch()">Cari</button>
                 </div>
             </div>
         </div>
 
         <!-- Data Table Section -->
         <div class="table-container">
-            <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
-                <span class="h5 mb-0">🐟 Daftar Ikan</span>
-                <button class="btn btn-primary btn-sm fw-bold" onclick="loadIkanData()">🔄 Refresh</button>
+            <div class="d-flex flex-wrap justify-content-between align-items-center p-4 border-bottom gap-2">
+                <span class="h5 mb-0">Daftar Ikan</span>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Mode tampilan">
+                        <button class="btn btn-light active" id="viewTableBtn" onclick="setIkanView('table')">Tabel</button>
+                        <button class="btn btn-light" id="viewGridBtn" onclick="setIkanView('grid')">Kartu</button>
+                    </div>
+                    <button class="btn btn-primary btn-sm fw-bold" onclick="loadIkanData()">Refresh</button>
+                </div>
             </div>
-            
+
             <!-- Grid View (Cards) -->
-            <div class="container-fluid p-4">
+            <div class="container-fluid p-4" id="gridIkanSection" style="display: none;">
                 <div class="row" id="gridIkan">
                     <div class="col-12 text-center text-muted">Memuat data...</div>
                 </div>
             </div>
 
             <!-- Table View -->
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Foto</th>
-                        <th>Nama Ikan</th>
-                        <th class="text-end">Jumlah (ekor)</th>
-                        <th class="text-end">Persentase</th>
-                        <th>Tanggal Input</th>
-                    </tr>
-                </thead>
-                <tbody id="tableIkanBody">
-                    <tr>
-                        <td colspan="5" class="text-center text-muted py-4">Memuat data...</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive" id="tableIkanSection">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Nama Ikan</th>
+                            <th class="text-end">Jumlah (ton)</th>
+                            <th class="text-end">Persentase</th>
+                            <th>Tanggal Input</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableIkanBody">
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">Memuat data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <!-- Footer -->
-    <div class="footer">
-        <p>&copy; 2025 PPN Tegalsari. Semua hak dilindungi.</p>
-    </div>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-col footer-brand">
+                <div class="footer-brand-row">
+                    <div class="footer-logos">
+                        <img src="/images/Logo2.png" alt="Logo PPN Tegalsari 2" class="footer-logo">
+                        <img src="/images/Logo1.png" alt="Logo PPN Tegalsari" class="footer-logo">
+                    </div>
+                    <div>
+                        <div class="footer-title">PELABUHAN PERIKANAN NUSANTARA</div>
+                        <div class="footer-subtitle">TEGALSARI</div>
+                    </div>
+                </div>
+                <p class="footer-text">Jl. Blanak No.10C, Tegalsari, Kec. Tegal Bar., Kota Tegal, Jawa Tengah 52111</p>
+            </div>
+            <div class="footer-col">
+                <div class="footer-title">Kontak</div>
+                <ul class="footer-list">
+                    <li>Telp: (0283) 358787</li>
+                    <li>Fax: (0283) 321366</li>
+                    <li>Email: p3tegalsari@gmail.com</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <div class="footer-title">Media Sosial</div>
+                <div class="footer-social">
+                    <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="#" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+                    <a href="tel:+62283358787" aria-label="Telepon"><i class="bi bi-telephone"></i></a>
+                    <a href="mailto:p3tegalsari@gmail.com" aria-label="Email"><i class="bi bi-envelope"></i></a>
+                </div>
+            </div>
+            <div class="footer-col footer-map">
+                <div class="footer-title">Lokasi</div>
+                <div class="footer-map-embed">
+                    <iframe
+                        title="PPN Tegalsari Map"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        src="https://www.google.com/maps?q=Jl.%20Blanak%20No.10C%2C%20Tegalsari%2C%20Kec.%20Tegal%20Bar.%2C%20Kota%20Tegal%2C%20Jawa%20Tengah%2052111&output=embed">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <span id="footerYear"></span> PPN Tegalsari. Semua hak dilindungi.</p>
+        </div>
+    </footer>
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -182,5 +253,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Custom JS -->
     <script src="/js/laporan-ikan.js"></script>
+    <script>
+        const footerYear = document.getElementById('footerYear');
+        if (footerYear) {
+            footerYear.textContent = new Date().getFullYear();
+        }
+    </script>
 </body>
 </html>

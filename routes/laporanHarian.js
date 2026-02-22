@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const adminAuth = require('../middleware/adminAuth');
 
 /**
  * POST /api/laporan-harian
  * Tambah atau update data harian
  */
-router.post('/', async (req, res) => {
+router.post('/', adminAuth, async (req, res) => {
     try {
         const { tanggal, stblkk, pb, asuransi_baru, asuransi_lama, bbm_subsidi_surat, bbm_non_surat } = req.body;
 
@@ -102,7 +103,7 @@ router.get('/', async (req, res) => {
  * GET /api/laporan-harian/detail/:tanggal
  * Ambil data satu hari spesifik
  */
-router.get('/detail/:tanggal', async (req, res) => {
+router.get('/detail/:tanggal', adminAuth, async (req, res) => {
     try {
         const { tanggal } = req.params;
         const connection = await pool.getConnection();
@@ -130,7 +131,7 @@ router.get('/detail/:tanggal', async (req, res) => {
  * DELETE /api/laporan-harian/:tanggal
  * Hapus data harian
  */
-router.delete('/:tanggal', async (req, res) => {
+router.delete('/:tanggal', adminAuth, async (req, res) => {
     try {
         const { tanggal } = req.params;
         const connection = await pool.getConnection();

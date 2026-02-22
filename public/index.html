@@ -7,6 +7,7 @@
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -17,7 +18,10 @@
             <a href="/" class="header-link">
                 <div class="header-content">
                     <div class="logo-section">
-                        <img src="/images/logo.png" alt="Logo PPN Tegalsari" class="ppn-logo">
+                        <div class="logo-group">
+                            <img src="/images/Logo2.png" alt="Logo PPN Tegalsari 2" class="ppn-logo">
+                            <img src="/images/Logo1.png" alt="Logo PPN Tegalsari" class="ppn-logo">
+                        </div>
                     </div>
                     <div class="institution-section">
                         <h1>PELABUHAN PERIKANAN NUSANTARA</h1>
@@ -29,9 +33,9 @@
     </header>
 
     <!-- Navigation Menu -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-modern">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">PPN Tegalsari</a>
+            <a class="navbar-brand" href="/">PPN Tegalsari<small>Sistem Pelaporan Harian</small></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -50,26 +54,21 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="navAuthLink" href="/login"><span id="navAuthIcon" class="me-1">🔐</span><span id="navAuthText">Login</span></a>
+                        <a class="nav-link login-link" id="navAuthLink" href="/login"><span id="navAuthText">Login</span></a>
+                    </li>
+                    <li class="nav-item" id="navProfile" style="display: none;">
+                        <div class="nav-profile">
+                            <img id="navProfileImg" alt="Profil" />
+                            <div class="nav-profile-text">
+                                <div id="navProfileName"></div>
+                                <small id="navProfileEmail"></small>
+                            </div>
+                        </div>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <!-- Hero -->
-    <div class="hero">
-        <div class="container hero-inner">
-            <div>
-                <h1 class="hero-title">Dashboard Laporan PPN Tegalsari</h1>
-                <p class="hero-desc">Sistem Pelaporan dan Rekap Data Layanan Perikanan PPN Tegalsari</p>
-                <div class="hero-ctas">
-                    <a id="primaryCta" class="btn btn-primary btn-lg me-2" href="/login" role="button">Login untuk Pelaporan</a>
-                    <a id="secondaryCta" class="btn btn-light btn-lg" href="/laporan-ikan" role="button">Lihat Laporan</a>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Carousel/Banner -->
     <div id="carouselBanner" class="carousel slide carousel-banner" data-bs-ride="carousel" data-bs-interval="5000">
@@ -82,27 +81,15 @@
         <div class="carousel-inner">
             <div class="carousel-item active">
                 <img src="/images/Banner1.jpeg" class="d-block w-100" alt="Banner 1">
-                <div class="carousel-caption">
-                    <a href="/input-laporan-harian" class="btn btn-light btn-lg mt-3">Lihat Infografis</a>
-                </div>
             </div>
             <div class="carousel-item">
                 <img src="/images/banner2.jpeg" class="d-block w-100" alt="Banner 2">
-                <div class="carousel-caption">
-                    <a href="/laporan-ikan" class="btn btn-light btn-lg mt-3">Lihat Laporan Ikan</a>
-                </div>
             </div>
             <div class="carousel-item">
                 <img src="/images/Banner3.jpeg" class="d-block w-100" alt="Banner 3">
-                <div class="carousel-caption">
-                    <a href="/" class="btn btn-light btn-lg mt-3">Kembali ke Dashboard</a>
-                </div>
             </div>
             <div class="carousel-item">
                 <img src="/images/Banner4.jpeg" class="d-block w-100" alt="Banner 4">
-                <div class="carousel-caption">
-                    <a href="/login" class="btn btn-light btn-lg mt-3">Login Admin</a>
-                </div>
             </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselBanner" data-bs-slide="prev">
@@ -117,94 +104,98 @@
     <div class="container-main">
         <!-- Page Header -->
         <div class="page-header">
-            <h1>📈 Dashboard Laporan</h1>
+            <h1>Dashboard Laporan</h1>
             <p>Rekap data harian, bulanan, dan tahunan PPN Tegalsari</p>
         </div>
 
-        <!-- Filter Section -->
-        <div class="filter-section">
-            <div class="filter-title">🔍 Filter Data</div>
-            <div class="filter-controls">
-                <div class="filter-control">
-                    <label for="filterStartDate">Dari Tanggal</label>
-                    <input type="date" id="filterStartDate" class="form-control">
-                </div>
-                <div class="filter-control">
-                    <label for="filterEndDate">Sampai Tanggal</label>
-                    <input type="date" id="filterEndDate" class="form-control">
-                </div>
-                <div class="filter-control">
-                    <label for="filterYear">Tahun (untuk Rekap Bulanan)</label>
-                    <input type="number" id="filterYear" class="form-control" placeholder="2025" min="2020" max="2100">
-                </div>
-                <div class="filter-control">
-                    <button class="btn btn-primary w-100" onclick="applyFilter()">
-                        Terapkan Filter
-                    </button>
-                </div>
-            </div>
-        </div>
-
         <!-- Statistics Cards -->
-        <div class="row mb-4">
+        <div class="row mb-4 stats-compact">
             <div class="col-md-6 col-lg-3">
-                <div class="stat-card primary">
-                    <div class="stat-card-label">Total STBLKK</div>
-                    <div class="stat-card-value" id="statSTBLKK">0</div>
+                <div class="stat-card primary stat-card-modern">
+                    <div class="stat-card-icon">📄</div>
+                    <div>
+                        <div class="stat-card-label">Total STBLKK</div>
+                        <div class="stat-card-value" id="statSTBLKK">0</div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="stat-card success">
-                    <div class="stat-card-label">Total PB</div>
-                    <div class="stat-card-value" id="statPB">0</div>
+                <div class="stat-card success stat-card-modern">
+                    <div class="stat-card-icon">📦</div>
+                    <div>
+                        <div class="stat-card-label">Total PB</div>
+                        <div class="stat-card-value" id="statPB">0</div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="stat-card info">
-                    <div class="stat-card-label">Total Asuransi</div>
-                    <div class="stat-card-value" id="statAsuransi">0</div>
+                <div class="stat-card info stat-card-modern">
+                    <div class="stat-card-icon">🛡️</div>
+                    <div>
+                        <div class="stat-card-label">Total Asuransi</div>
+                        <div class="stat-card-value" id="statAsuransi">0</div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="stat-card warning">
-                    <div class="stat-card-label">Total BBM</div>
-                    <div class="stat-card-value" id="statBBM">0</div>
+                <div class="stat-card warning stat-card-modern">
+                    <div class="stat-card-icon">⛽</div>
+                    <div>
+                        <div class="stat-card-label">Total BBM</div>
+                        <div class="stat-card-value" id="statBBM">0</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tabs -->
-        <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs mb-4" id="dashboardTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="tabHarian-tab" data-bs-toggle="tab" data-bs-target="#tabHarian" type="button" role="tab">
-                    📅 Grafik Harian
+                <button class="nav-link active" id="tab-harian" data-bs-toggle="tab" data-bs-target="#content-harian" type="button" role="tab">
+                    Data Harian
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tabBulanan-tab" data-bs-toggle="tab" data-bs-target="#tabBulanan" type="button" role="tab">
-                    📊 Grafik Bulanan
+                <button class="nav-link" id="tab-bulanan" data-bs-toggle="tab" data-bs-target="#content-bulanan" type="button" role="tab">
+                    Data Bulanan
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tabTahunan-tab" data-bs-toggle="tab" data-bs-target="#tabTahunan" type="button" role="tab">
-                    📈 Grafik Tahunan
+                <button class="nav-link" id="tab-tahunan" data-bs-toggle="tab" data-bs-target="#content-tahunan" type="button" role="tab">
+                    Data Tahunan
                 </button>
             </li>
         </ul>
 
         <div class="tab-content" id="dashboardTabContent">
-            <!-- Tab 1: Grafik Harian -->
-            <div class="tab-pane fade show active" id="tabHarian" role="tabpanel">
-                <div class="chart-container">
-                    <div class="chart-title">
-                        📅 Grafik Harian
-                        <small>Total layanan per hari</small>
+            <!-- Tab Harian -->
+            <div class="tab-pane fade show active" id="content-harian" role="tabpanel">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-4">
+                                <label for="daySelector" class="form-label fw-bold">Pilih Tanggal:</label>
+                                <input type="date" id="daySelector" class="form-control">
+                            </div>
+                            <div class="col-md-8">
+                                <p class="text-muted mb-0">Pilih tanggal untuk melihat data pelaporan pada hari tersebut</p>
+                            </div>
+                        </div>
                     </div>
-                    <canvas id="chartHarian" class="chart-canvas"></canvas>
                 </div>
 
-                <div class="card">
-                    <div class="card-header">📋 Tabel Data Harian</div>
+                <div class="card dashboard-card shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-4">Grafik Data Harian</h5>
+                        <div class="chart-controls" id="chartHarianControls"></div>
+                        <div style="position: relative; height: 350px;">
+                            <canvas id="chartHarian" class="chart-canvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header">Data Pelaporan Harian</div>
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
@@ -225,21 +216,38 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="table-pagination" id="paginationHarian"></div>
                 </div>
             </div>
 
-            <!-- Tab 2: Grafik Bulanan -->
-            <div class="tab-pane fade" id="tabBulanan" role="tabpanel">
-                <div class="chart-container">
-                    <div class="chart-title">
-                        📊 Grafik Bulanan
-                        <small>Total layanan per bulan (agregasi dari data harian)</small>
+            <!-- Tab Bulanan -->
+            <div class="tab-pane fade" id="content-bulanan" role="tabpanel">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-4">
+                                <label for="monthSelector" class="form-label fw-bold">Pilih Bulan:</label>
+                                <input type="month" id="monthSelector" class="form-control">
+                            </div>
+                            <div class="col-md-8">
+                                <p class="text-muted mb-0">Pilih bulan untuk melihat data pelaporan bulanan tersebut</p>
+                            </div>
+                        </div>
                     </div>
-                    <canvas id="chartBulanan" class="chart-canvas"></canvas>
                 </div>
 
-                <div class="card">
-                    <div class="card-header">📋 Tabel Rekap Bulanan</div>
+                <div class="card dashboard-card shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-4">Grafik Data Bulanan</h5>
+                        <div class="chart-controls" id="chartBulananControls"></div>
+                        <div style="position: relative; height: 350px;">
+                            <canvas id="chartBulanan" class="chart-canvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header">Tabel Rekap Bulanan</div>
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
@@ -258,21 +266,38 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="table-pagination" id="paginationBulanan"></div>
                 </div>
             </div>
 
-            <!-- Tab 3: Grafik Tahunan -->
-            <div class="tab-pane fade" id="tabTahunan" role="tabpanel">
-                <div class="chart-container">
-                    <div class="chart-title">
-                        📈 Grafik Tahunan
-                        <small>Total layanan per tahun</small>
+            <!-- Tab Tahunan -->
+            <div class="tab-pane fade" id="content-tahunan" role="tabpanel">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-4">
+                                <label for="yearSelector" class="form-label fw-bold">Pilih Tahun:</label>
+                                <input type="number" id="yearSelector" class="form-control" min="2020" max="2100">
+                            </div>
+                            <div class="col-md-8">
+                                <p class="text-muted mb-0">Pilih tahun untuk melihat data pelaporan tahunan tersebut</p>
+                            </div>
+                        </div>
                     </div>
-                    <canvas id="chartTahunan" class="chart-canvas"></canvas>
                 </div>
 
-                <div class="card">
-                    <div class="card-header">📋 Tabel Rekap Tahunan</div>
+                <div class="card dashboard-card shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-4">Grafik Data Tahunan</h5>
+                        <div class="chart-controls" id="chartTahunanControls"></div>
+                        <div style="position: relative; height: 350px;">
+                            <canvas id="chartTahunan" class="chart-canvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header">Tabel Rekap Tahunan</div>
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
@@ -291,15 +316,63 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="table-pagination" id="paginationTahunan"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Footer -->
-    <div class="footer">
-        <p>&copy; 2025 PPN Tegalsari. Semua hak dilindungi.</p>
-    </div>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-col footer-brand">
+                <div class="footer-brand-row">
+                    <div class="footer-logos">
+                        <img src="/images/Logo2.png" alt="Logo PPN Tegalsari 2" class="footer-logo">
+                        <img src="/images/Logo1.png" alt="Logo PPN Tegalsari" class="footer-logo">
+                    </div>
+                    <div>
+                        <div class="footer-title">PELABUHAN PERIKANAN NUSANTARA</div>
+                        <div class="footer-subtitle">TEGALSARI</div>
+                    </div>
+                </div>
+                <p class="footer-text">Jl. Blanak No.10C, Tegalsari, Kec. Tegal Bar., Kota Tegal, Jawa Tengah 52111</p>
+            </div>
+            <div class="footer-col">
+                <div class="footer-title">Kontak</div>
+                <ul class="footer-list">
+                    <li>Telp: (0283) 358787</li>
+                    <li>Fax: (0283) 321366</li>
+                    <li>Email: p3tegalsari@gmail.com</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <div class="footer-title">Media Sosial</div>
+                <div class="footer-social">
+                    <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="#" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+                    <a href="tel:+62283358787" aria-label="Telepon"><i class="bi bi-telephone"></i></a>
+                    <a href="mailto:p3tegalsari@gmail.com" aria-label="Email"><i class="bi bi-envelope"></i></a>
+                </div>
+            </div>
+            <div class="footer-col footer-map">
+                <div class="footer-title">Lokasi</div>
+                <div class="footer-map-embed">
+                    <iframe
+                        title="PPN Tegalsari Map"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        src="https://www.google.com/maps?q=Jl.%20Blanak%20No.10C%2C%20Tegalsari%2C%20Kec.%20Tegal%20Bar.%2C%20Kota%20Tegal%2C%20Jawa%20Tengah%2052111&output=embed">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <span id="footerYear"></span> PPN Tegalsari. Semua hak dilindungi.</p>
+        </div>
+    </footer>
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -310,31 +383,67 @@
     <script>
     // UI logic: update navbar and hero CTA based on login state
     document.addEventListener('DOMContentLoaded', function() {
+        var footerYear = document.getElementById('footerYear');
+        if (footerYear) {
+            footerYear.textContent = new Date().getFullYear();
+        }
+
         var token = localStorage.getItem('adminToken');
+        var adminName = localStorage.getItem('adminName');
+        var adminEmail = localStorage.getItem('adminEmail');
+        var adminPicture = localStorage.getItem('adminPicture');
+        var navProfile = document.getElementById('navProfile');
+        var navProfileImg = document.getElementById('navProfileImg');
+        var navProfileName = document.getElementById('navProfileName');
+        var navProfileEmail = document.getElementById('navProfileEmail');
         var navAuthLink = document.getElementById('navAuthLink');
         var navAuthText = document.getElementById('navAuthText');
         var navAuthIcon = document.getElementById('navAuthIcon');
         var primaryCta = document.getElementById('primaryCta');
         if (token) {
             // User logged in
-            navAuthLink.href = '/admin';
-            navAuthText.textContent = 'Dashboard';
-            navAuthIcon.textContent = '📊';
-            navAuthLink.classList.add('text-warning');
-            primaryCta.textContent = 'Masuk / Kembali ke Dashboard';
-            primaryCta.href = '/admin';
-            primaryCta.classList.remove('btn-primary');
-            primaryCta.classList.add('btn-warning');
+            navAuthLink.href = '/login';
+            navAuthText.textContent = 'Logout';
+            if (navAuthIcon) navAuthIcon.textContent = '';
+            navAuthLink.classList.remove('text-warning');
+            if (navProfile && adminEmail) {
+                navProfile.style.display = 'flex';
+                if (navProfileName) navProfileName.textContent = adminName || 'Akun';
+                if (navProfileEmail) navProfileEmail.textContent = adminEmail;
+                if (navProfileImg) {
+                    navProfileImg.src = adminPicture || '/images/Logo1.png';
+                }
+            }
+            if (primaryCta) {
+                primaryCta.textContent = 'Masuk / Kembali ke Dashboard';
+                primaryCta.href = '/admin';
+                primaryCta.classList.remove('btn-primary');
+                primaryCta.classList.add('btn-warning');
+            }
         } else {
             // Not logged in
             navAuthLink.href = '/login';
             navAuthText.textContent = 'Login';
-            navAuthIcon.textContent = '🔐';
+            if (navAuthIcon) navAuthIcon.textContent = '';
             navAuthLink.classList.remove('text-warning');
-            primaryCta.textContent = 'Login untuk Pelaporan';
-            primaryCta.href = '/login';
-            primaryCta.classList.remove('btn-warning');
-            primaryCta.classList.add('btn-primary');
+            if (navProfile) navProfile.style.display = 'none';
+            if (primaryCta) {
+                primaryCta.textContent = 'Login untuk Pelaporan';
+                primaryCta.href = '/login';
+                primaryCta.classList.remove('btn-warning');
+                primaryCta.classList.add('btn-primary');
+            }
+        }
+
+        if (navAuthLink) {
+            navAuthLink.addEventListener('click', function() {
+                if (localStorage.getItem('adminToken')) {
+                    localStorage.removeItem('adminToken');
+                    localStorage.removeItem('adminEmail');
+                    localStorage.removeItem('adminName');
+                    localStorage.removeItem('adminPicture');
+                }
+            });
         }
     });
     </script>

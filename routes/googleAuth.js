@@ -5,6 +5,10 @@ const { google } = require('googleapis');
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const ROOT_URL = process.env.ROOT_URL || `http://localhost:${process.env.PORT || 3000}`;
+const ALLOWED_ADMIN_EMAILS = (process.env.ALLOWED_ADMIN_EMAILS || '')
+  .split(',')
+  .map((email) => email.trim().toLowerCase())
+  .filter(Boolean);
 
 function ensureConfig(req, res, next) {
   // Treat placeholder or empty secret as missing
@@ -36,12 +40,19 @@ router.get('/auth/google/callback', ensureConfig, async (req, res) => {
     const ticket = await oauth2Client.verifyIdToken({ idToken: tokens.id_token, audience: CLIENT_ID });
     const payload = ticket.getPayload();
     const email = payload.email;
+    const name = payload.name || payload.given_name || '';
+    const picture = payload.picture || '';
+
+    const allowAll = ALLOWED_ADMIN_EMAILS.includes('*') || ALLOWED_ADMIN_EMAILS.includes('all') || ALLOWED_ADMIN_EMAILS.length === 0;
+    if (!allowAll && !ALLOWED_ADMIN_EMAILS.includes(String(email).toLowerCase())) {
+      return res.status(403).send('Akun Google Anda tidak diizinkan untuk admin');
+    }
 
     // Buat simple token aplikasi (ganti dengan JWT pada production)
     const appToken = Buffer.from(`google:${email}:${Date.now()}`).toString('base64');
 
     // Redirect kembali ke halaman login dengan token di query param
-    const redirectUrl = `/login?adminToken=${encodeURIComponent(appToken)}&email=${encodeURIComponent(email)}`;
+    const redirectUrl = `/login?adminToken=${encodeURIComponent(appToken)}&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&picture=${encodeURIComponent(picture)}`;
     res.redirect(redirectUrl);
   } catch (err) {
     // Improve logging for common googleapis errors

@@ -77,7 +77,7 @@ function displayIkanTable(data) {
 
         const tdJumlah = document.createElement('td');
         tdJumlah.className = 'text-end';
-        tdJumlah.textContent = (item.jumlah || 0) + ' ekor';
+        tdJumlah.textContent = (item.jumlah || 0) + ' ton';
         tr.appendChild(tdJumlah);
 
         const tdTanggal = document.createElement('td');

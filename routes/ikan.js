@@ -1,6 +1,56 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const adminAuth = require('../middleware/adminAuth');
+
+let ikanSchemaCache = null;
+
+async function getIkanSchema(connection) {
+    if (ikanSchemaCache) return ikanSchemaCache;
+
+    const [columns] = await connection.query('SHOW COLUMNS FROM ikan');
+    const colNames = columns.map((col) => col.Field.toLowerCase());
+    const has = (name) => colNames.includes(String(name).toLowerCase());
+
+    const qtyColumn = has('jumlah')
+        ? 'jumlah'
+        : has('jumlah_ikan')
+            ? 'jumlah_ikan'
+            : has('stok')
+                ? 'stok'
+                : null;
+
+    const fotoColumn = has('foto')
+        ? 'foto'
+        : has('foto_ikan')
+            ? 'foto_ikan'
+            : has('gambar')
+                ? 'gambar'
+                : null;
+
+    ikanSchemaCache = { qtyColumn, fotoColumn };
+    return ikanSchemaCache;
+}
+
+function normalizeIkanRow(row) {
+    if (!row) return row;
+    row.jumlah = row.jumlah ?? row.jumlah_ikan ?? row.stok ?? 0;
+    let fotoValue = row.foto ?? row.foto_ikan ?? row.gambar ?? null;
+    if (typeof fotoValue === 'string') {
+        let trimmed = fotoValue.trim();
+        const isDataUrl = trimmed.startsWith('data:image/');
+        if (isDataUrl) {
+            trimmed = trimmed.replace(/\s+/g, '');
+            if (trimmed.length < 1000) {
+                fotoValue = null;
+            } else {
+                fotoValue = trimmed;
+            }
+        }
+    }
+    row.foto = fotoValue || null;
+    return row;
+}
 
 /**
  * GET /api/ikan
@@ -12,7 +62,8 @@ router.get('/', async (req, res) => {
         const [rows] = await connection.query('SELECT * FROM ikan ORDER BY created_at DESC');
         connection.release();
 
-        return res.json({ success: true, data: rows });
+        const data = rows.map(normalizeIkanRow);
+        return res.json({ success: true, data });
 
     } catch (error) {
         console.error('Error:', error);
@@ -24,7 +75,7 @@ router.get('/', async (req, res) => {
  * GET /api/ikan/:id
  * Ambil detail ikan
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', adminAuth, async (req, res) => {
     try {
         const { id } = req.params;
         const connection = await pool.getConnection();
@@ -35,7 +86,7 @@ router.get('/:id', async (req, res) => {
             return res.status(404).json({ success: false, message: 'Ikan tidak ditemukan' });
         }
 
-        return res.json({ success: true, data: rows[0] });
+        return res.json({ success: true, data: normalizeIkanRow(rows[0]) });
 
     } catch (error) {
         console.error('Error:', error);
@@ -47,7 +98,7 @@ router.get('/:id', async (req, res) => {
  * POST /api/ikan
  * Tambah ikan baru
  */
-router.post('/', async (req, res) => {
+router.post('/', adminAuth, async (req, res) => {
     try {
         const { nama_ikan, jumlah, foto } = req.body;
 
@@ -57,9 +108,25 @@ router.post('/', async (req, res) => {
         }
 
         const connection = await pool.getConnection();
+        const schema = await getIkanSchema(connection);
+
+        if (!schema.qtyColumn) {
+            connection.release();
+            return res.status(500).json({ success: false, message: 'Kolom jumlah ikan tidak ditemukan di database.' });
+        }
+
+        const columns = ['nama_ikan', schema.qtyColumn];
+        const values = [nama_ikan, jumlah];
+
+        if (schema.fotoColumn) {
+            columns.push(schema.fotoColumn);
+            values.push(foto || null);
+        }
+
+        const placeholders = columns.map(() => '?').join(', ');
         await connection.query(
-            'INSERT INTO ikan (nama_ikan, jumlah, foto) VALUES (?, ?, ?)',
-            [nama_ikan, jumlah, foto || null]
+            `INSERT INTO ikan (${columns.join(', ')}) VALUES (${placeholders})`,
+            values
         );
         connection.release();
 
@@ -79,7 +146,7 @@ router.post('/', async (req, res) => {
  * PUT /api/ikan/:id
  * Update ikan
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', adminAuth, async (req, res) => {
     try {
         const { id } = req.params;
         const { nama_ikan, jumlah, foto } = req.body;
@@ -90,9 +157,26 @@ router.put('/:id', async (req, res) => {
         }
 
         const connection = await pool.getConnection();
+        const schema = await getIkanSchema(connection);
+
+        if (!schema.qtyColumn) {
+            connection.release();
+            return res.status(500).json({ success: false, message: 'Kolom jumlah ikan tidak ditemukan di database.' });
+        }
+
+        const updates = ['nama_ikan = ?', `${schema.qtyColumn} = ?`];
+        const params = [nama_ikan, jumlah];
+
+        if (schema.fotoColumn && foto !== undefined) {
+            updates.push(`${schema.fotoColumn} = ?`);
+            params.push(foto || null);
+        }
+
+        params.push(id);
+
         const [result] = await connection.query(
-            'UPDATE ikan SET nama_ikan = ?, jumlah = ?, foto = ? WHERE id = ?',
-            [nama_ikan, jumlah, foto || null, id]
+            `UPDATE ikan SET ${updates.join(', ')} WHERE id = ?`,
+            params
         );
         connection.release();
 
@@ -116,13 +200,19 @@ router.put('/:id', async (req, res) => {
  * DELETE /api/ikan/:id
  * Hapus ikan
  */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', adminAuth, async (req, res) => {
     try {
         const { id } = req.params;
         const connection = await pool.getConnection();
 
+        const schema = await getIkanSchema(connection);
+        const fotoColumn = schema.fotoColumn;
+
         // Ambil data foto terlebih dahulu
-        const [rows] = await connection.query('SELECT foto FROM ikan WHERE id = ?', [id]);
+        const [rows] = await connection.query(
+            `SELECT ${fotoColumn ? `${fotoColumn} AS foto` : 'NULL AS foto'} FROM ikan WHERE id = ?`,
+            [id]
+        );
         
         if (rows.length === 0) {
             connection.release();

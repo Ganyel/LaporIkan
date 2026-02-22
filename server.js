@@ -28,39 +28,6 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.static('public'));
 
-// Middleware untuk cek admin login
-function checkAdminAuth(req, res, next) {
-    const token = req.headers.authorization?.split(' ')[1] || req.query.token;
-
-    if (!token) {
-        return res.status(401).json({
-            success: false,
-            message: 'Token tidak ditemukan'
-        });
-    }
-
-    // Simple verification (dalam production gunakan JWT!)
-    try {
-        const decoded = Buffer.from(token, 'base64').toString();
-        const [username] = decoded.split(':');
-
-        // Accept either local admin tokens (username === 'admin')
-        // or tokens issued by Google OAuth which use the 'google' prefix.
-        // In production use proper JWTs and verify claims instead.
-        if (username === 'admin' || username === 'google') {
-            req.adminUsername = username;
-            return next();
-        }
-    } catch (e) {
-        // Token invalid
-    }
-
-    return res.status(401).json({
-        success: false,
-        message: 'Token tidak valid atau expired'
-    });
-}
-
 // API Routes
 app.use('/api/laporan-harian', laporanHarianRoutes);
 app.use('/api/ikan', ikanRoutes);

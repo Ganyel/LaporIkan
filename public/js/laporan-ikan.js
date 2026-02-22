@@ -9,6 +9,7 @@ let chartIkan, chartProporsi;
 // ==========================================
 document.addEventListener('DOMContentLoaded', function () {
     loadIkanData();
+    setIkanView('table');
 });
 
 // ==========================================
@@ -100,13 +101,29 @@ function displayGridView(data) {
         card.style.transition = 'all 0.3s ease';
 
         if (item.foto) {
+            const sanitizedFoto = String(item.foto).replace(/\s+/g, '');
             const img = document.createElement('img');
-            img.src = item.foto;
+            img.src = sanitizedFoto;
             img.alt = item.nama_ikan || '';
             img.style.width = '100%';
             img.style.height = '150px';
             img.style.objectFit = 'cover';
             img.style.borderRadius = '8px 8px 0 0';
+            img.onerror = () => {
+                img.remove();
+                const placeholder = document.createElement('div');
+                placeholder.style.width = '100%';
+                placeholder.style.height = '150px';
+                placeholder.style.background = 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)';
+                placeholder.style.borderRadius = '8px 8px 0 0';
+                placeholder.style.display = 'flex';
+                placeholder.style.alignItems = 'center';
+                placeholder.style.justifyContent = 'center';
+                placeholder.style.color = 'white';
+                placeholder.style.fontSize = '2rem';
+                placeholder.textContent = '🐟';
+                card.insertBefore(placeholder, card.firstChild);
+            };
             card.appendChild(img);
         } else {
             const placeholder = document.createElement('div');
@@ -135,7 +152,7 @@ function displayGridView(data) {
         p.appendChild(strong);
         const span = document.createElement('span');
         span.className = 'text-muted';
-        span.textContent = ' ekor';
+        span.textContent = ' ton';
         p.appendChild(span);
         const small = document.createElement('small');
         small.className = 'text-muted';
@@ -149,6 +166,31 @@ function displayGridView(data) {
         col.appendChild(card);
         gridDiv.appendChild(col);
     });
+}
+
+// ==========================================
+// VIEW TOGGLE
+// ==========================================
+function setIkanView(mode) {
+    const gridSection = document.getElementById('gridIkanSection');
+    const tableSection = document.getElementById('tableIkanSection');
+    const tableBtn = document.getElementById('viewTableBtn');
+    const gridBtn = document.getElementById('viewGridBtn');
+
+    if (!gridSection || !tableSection || !tableBtn || !gridBtn) return;
+
+    if (mode === 'grid') {
+        gridSection.style.display = 'block';
+        tableSection.style.display = 'none';
+        gridBtn.classList.add('active');
+        tableBtn.classList.remove('active');
+        return;
+    }
+
+    tableSection.style.display = 'block';
+    gridSection.style.display = 'none';
+    tableBtn.classList.add('active');
+    gridBtn.classList.remove('active');
 }
 
 // ==========================================
@@ -175,12 +217,20 @@ function displayIkanTable(data) {
 
         const tdFoto = document.createElement('td');
         if (item.foto) {
+            const sanitizedFoto = String(item.foto).replace(/\s+/g, '');
             const img = document.createElement('img');
-            img.src = item.foto;
+            img.src = sanitizedFoto;
             img.alt = item.nama_ikan || '';
             img.style.maxWidth = '50px';
             img.style.maxHeight = '50px';
             img.style.borderRadius = '4px';
+            img.onerror = () => {
+                img.remove();
+                const span = document.createElement('span');
+                span.className = 'badge bg-secondary';
+                span.textContent = 'Tidak ada foto';
+                tdFoto.appendChild(span);
+            };
             tdFoto.appendChild(img);
         } else {
             const span = document.createElement('span');
@@ -256,7 +306,7 @@ function drawBarChart(labels, values) {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Jumlah Ikan (ekor)',
+                label: 'Jumlah Ikan (ton)',
                 data: values,
                 backgroundColor: colors.slice(0, labels.length).map((c, i) => {
                     // Gradient colors
@@ -264,7 +314,8 @@ function drawBarChart(labels, values) {
                 }),
                 borderColor: colors.slice(0, labels.length).map(c => c.replace('8', '9')),
                 borderWidth: 2,
-                borderRadius: 8,
+                borderRadius: 6,
+                borderSkipped: false,
                 tension: 0.4
             }]
         },
@@ -272,15 +323,20 @@ function drawBarChart(labels, values) {
             responsive: true,
             maintainAspectRatio: false,
             indexAxis: labels.length > 6 ? 'y' : 'x',
+            layout: {
+                padding: { top: 4, right: 8, bottom: 4, left: 8 }
+            },
             plugins: {
                 legend: {
                     display: true,
-                    position: 'top',
+                    position: 'bottom',
                     labels: {
                         usePointStyle: true,
-                        padding: 15,
+                        padding: 10,
+                        boxWidth: 10,
+                        boxHeight: 10,
                         font: {
-                            size: 13,
+                            size: 11,
                             weight: 'bold'
                         },
                         color: '#333'
@@ -289,11 +345,13 @@ function drawBarChart(labels, values) {
                 tooltip: {
                     backgroundColor: 'rgba(0,0,0,0.8)',
                     padding: 12,
-                    titleFont: { size: 14, weight: 'bold' },
-                    bodyFont: { size: 13 },
+                    titleFont: { size: 13, weight: 'bold' },
+                    bodyFont: { size: 12 },
                     callbacks: {
                         label: function(context) {
-                            return context.parsed.y + ' ekor';
+                            const axis = context.chart.options.indexAxis;
+                            const value = axis === 'y' ? context.parsed.x : context.parsed.y;
+                            return value + ' ton';
                         }
                     }
                 }
@@ -306,14 +364,17 @@ function drawBarChart(labels, values) {
                         drawBorder: true
                     },
                     ticks: {
-                        callback: function(value) {
-                            return value;
-                        }
+                        autoSkip: true,
+                        maxTicksLimit: 8
                     }
                 },
                 x: {
                     grid: {
                         display: false
+                    },
+                    ticks: {
+                        autoSkip: true,
+                        maxTicksLimit: 8
                     }
                 }
             }
@@ -352,15 +413,20 @@ function drawPieChart(labels, values) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+                padding: { top: 4, right: 8, bottom: 6, left: 8 }
+            },
             plugins: {
                 legend: {
                     display: true,
                     position: 'bottom',
                     labels: {
                         usePointStyle: true,
-                        padding: 15,
+                        padding: 10,
+                        boxWidth: 10,
+                        boxHeight: 10,
                         font: {
-                            size: 12,
+                            size: 11,
                             weight: 'bold'
                         },
                         color: '#333'
@@ -369,13 +435,13 @@ function drawPieChart(labels, values) {
                 tooltip: {
                     backgroundColor: 'rgba(0,0,0,0.8)',
                     padding: 12,
-                    titleFont: { size: 14, weight: 'bold' },
-                    bodyFont: { size: 13 },
+                    titleFont: { size: 13, weight: 'bold' },
+                    bodyFont: { size: 12 },
                     callbacks: {
                         label: function(context) {
                             const total = context.dataset.data.reduce((a, b) => a + b, 0);
                             const percentage = ((context.parsed / total) * 100).toFixed(1);
-                            return context.label + ': ' + context.parsed + ' ekor (' + percentage + '%)';
+                            return context.label + ': ' + context.parsed + ' ton (' + percentage + '%)';
                         }
                     }
                 }

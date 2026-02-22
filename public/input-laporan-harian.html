@@ -7,6 +7,7 @@
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Custom CSS -->
@@ -19,7 +20,10 @@
             <a href="/" class="header-link">
                 <div class="header-content">
                     <div class="logo-section">
-                        <img src="/images/logo.png" alt="Logo PPN Tegalsari" class="ppn-logo">
+                        <div class="logo-group">
+                            <img src="/images/Logo2.png" alt="Logo PPN Tegalsari 2" class="ppn-logo">
+                            <img src="/images/Logo1.png" alt="Logo PPN Tegalsari" class="ppn-logo">
+                        </div>
                     </div>
                     <div class="institution-section">
                         <h1>PELABUHAN PERIKANAN NUSANTARA</h1>
@@ -31,10 +35,9 @@
     </header>
 
     <!-- Navigation Menu -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-modern">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">Dashboard Laporan</a>
-            <a class="navbar-brand" href="/">PPN Tegalsari</a>
+            <a class="navbar-brand" href="/">PPN Tegalsari<small>Sistem Pelaporan Harian</small></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -53,7 +56,7 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/login">Login</a>
+                        <a class="nav-link login-link" href="/login">Login</a>
                     </li>
                 </ul>
             </div>
@@ -75,17 +78,17 @@
         <ul class="nav nav-tabs mb-4" id="dashboardTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="tab-harian" data-bs-toggle="tab" data-bs-target="#content-harian" type="button" role="tab">
-                    📅 Data Harian
+                    Data Harian
                 </button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="tab-bulanan" data-bs-toggle="tab" data-bs-target="#content-bulanan" type="button" role="tab">
-                    📊 Data Bulanan
+                    Data Bulanan
                 </button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="tab-tahunan" data-bs-toggle="tab" data-bs-target="#content-tahunan" type="button" role="tab">
-                    📈 Data Tahunan
+                    Data Tahunan
                 </button>
             </li>
         </ul>
@@ -111,7 +114,7 @@
 
                 <div class="card dashboard-card shadow-sm mb-4">
                     <div class="card-body p-4">
-                        <h5 class="card-title mb-4">📅 Grafik Data Harian</h5>
+                        <h5 class="card-title mb-4">Grafik Data Harian</h5>
                         <div style="position: relative; height: 350px;">
                             <canvas id="chartHarian"></canvas>
                         </div>
@@ -120,8 +123,8 @@
 
                 <div class="card shadow-sm">
                     <div class="card-header bg-gradient d-flex justify-content-between align-items-center">
-                        <span class="fw-bold">📋 Data Pelaporan Harian</span>
-                        <button class="btn btn-sm btn-light fw-bold" onclick="loadHarianData()">🔄 Refresh</button>
+                        <span class="fw-bold">Data Pelaporan Harian</span>
+                        <button class="btn btn-sm btn-light fw-bold" onclick="loadHarianData()">Refresh</button>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -163,7 +166,7 @@
 
                 <div class="card dashboard-card shadow-sm mb-4">
                     <div class="card-body p-4">
-                        <h5 class="card-title mb-4">📊 Grafik Data Bulanan</h5>
+                        <h5 class="card-title mb-4">Grafik Data Bulanan</h5>
                         <div style="position: relative; height: 350px;">
                             <canvas id="chartBulanan"></canvas>
                         </div>
@@ -172,8 +175,8 @@
 
                 <div class="card shadow-sm">
                     <div class="card-header bg-gradient d-flex justify-content-between align-items-center">
-                        <span class="fw-bold">📋 Data Pelaporan Bulanan</span>
-                        <button class="btn btn-sm btn-light fw-bold" onclick="loadBulanData()">🔄 Refresh</button>
+                        <span class="fw-bold">Data Pelaporan Bulanan</span>
+                        <button class="btn btn-sm btn-light fw-bold" onclick="loadBulanData()">Refresh</button>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -215,7 +218,7 @@
 
                 <div class="card dashboard-card shadow-sm mb-4">
                     <div class="card-body p-4">
-                        <h5 class="card-title mb-4">📈 Grafik Data Tahunan</h5>
+                        <h5 class="card-title mb-4">Grafik Data Tahunan</h5>
                         <div style="position: relative; height: 350px;">
                             <canvas id="chartTahunan"></canvas>
                         </div>
@@ -224,15 +227,15 @@
 
                 <div class="card shadow-sm">
                     <div class="card-header bg-gradient d-flex justify-content-between align-items-center">
-                        <span class="fw-bold">📋 Data Pelaporan Tahunan</span>
-                        <button class="btn btn-sm btn-light fw-bold" onclick="loadTahunData()">🔄 Refresh</button>
+                        <span class="fw-bold">Data Pelaporan Tahunan</span>
+                        <button class="btn btn-sm btn-light fw-bold" onclick="loadTahunData()">Refresh</button>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th class="fw-bold">Bulan</th>
+                                        <th class="fw-bold">Tahun</th>
                                         <th class="text-end fw-bold">Total</th>
                                         <th class="text-end fw-bold">Rata-Rata</th>
                                     </tr>
@@ -251,16 +254,66 @@
     </div>
 
     <!-- Footer -->
-    <div class="footer">
-        <p>&copy; 2025 PPN Tegalsari. Semua hak dilindungi.</p>
-    </div>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-col footer-brand">
+                <div class="footer-brand-row">
+                    <div class="footer-logos">
+                        <img src="/images/Logo2.png" alt="Logo PPN Tegalsari 2" class="footer-logo">
+                        <img src="/images/Logo1.png" alt="Logo PPN Tegalsari" class="footer-logo">
+                    </div>
+                    <div>
+                        <div class="footer-title">PELABUHAN PERIKANAN NUSANTARA</div>
+                        <div class="footer-subtitle">TEGALSARI</div>
+                    </div>
+                </div>
+                <p class="footer-text">Jl. Blanak No.10C, Tegalsari, Kec. Tegal Bar., Kota Tegal, Jawa Tengah 52111</p>
+            </div>
+            <div class="footer-col">
+                <div class="footer-title">Kontak</div>
+                <ul class="footer-list">
+                    <li>Telp: (0283) 358787</li>
+                    <li>Fax: (0283) 321366</li>
+                    <li>Email: p3tegalsari@gmail.com</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <div class="footer-title">Media Sosial</div>
+                <div class="footer-social">
+                    <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="#" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+                    <a href="tel:+62283358787" aria-label="Telepon"><i class="bi bi-telephone"></i></a>
+                    <a href="mailto:p3tegalsari@gmail.com" aria-label="Email"><i class="bi bi-envelope"></i></a>
+                </div>
+            </div>
+            <div class="footer-col footer-map">
+                <div class="footer-title">Lokasi</div>
+                <div class="footer-map-embed">
+                    <iframe
+                        title="PPN Tegalsari Map"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        src="https://www.google.com/maps?q=Jl.%20Blanak%20No.10C%2C%20Tegalsari%2C%20Kec.%20Tegal%20Bar.%2C%20Kota%20Tegal%2C%20Jawa%20Tengah%2052111&output=embed">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <span id="footerYear"></span> PPN Tegalsari. Semua hak dilindungi.</p>
+        </div>
+    </footer>
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
-    <script src="/js/admin.js"></script>
-    
     <script>
+        const footerYear = document.getElementById('footerYear');
+        if (footerYear) {
+            footerYear.textContent = new Date().getFullYear();
+        }
+
         let charts = {};
 
         // Initialize charts on page load
@@ -280,17 +333,71 @@
             initCharts();
         });
 
-        function initCharts() {
-            // Chart configuration
-            const chartOptions = {
+        function getBaseChartOptions() {
+            return {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 12,
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            }
+                        }
                     }
                 }
             };
+        }
+
+        function withBarStyle(dataset) {
+            return {
+                ...dataset,
+                borderRadius: 6,
+                borderSkipped: false
+            };
+        }
+
+        function buildLineDataset(label, data, color) {
+            return {
+                label,
+                data,
+                borderColor: color,
+                backgroundColor: color,
+                borderWidth: 2,
+                tension: 0.35,
+                pointRadius: 3,
+                pointHoverRadius: 5,
+                fill: false
+            };
+        }
+
+        const CATEGORY_KEYS = [
+            { key: 'stblkk', label: 'STBLKK', color: '#1e3a8a' },
+            { key: 'pb', label: 'PB', color: '#3b82f6' },
+            { key: 'asuransi_baru', label: 'Asuransi Baru', color: '#10b981' },
+            { key: 'asuransi_lama', label: 'Asuransi Lama', color: '#f59e0b' },
+            { key: 'bbm_subsidi_surat', label: 'BBM Subsidi', color: '#ef4444' },
+            { key: 'bbm_non_surat', label: 'BBM Non-Subsidi', color: '#0891b2' }
+        ];
+
+        function sumCategory(items, key) {
+            return items.reduce((sum, item) => sum + (parseInt(item[key], 10) || 0), 0);
+        }
+
+        function formatDateValue(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function initCharts() {
+            const chartOptions = getBaseChartOptions();
 
             // Chart Harian
             const ctxHarian = document.getElementById('chartHarian').getContext('2d');
@@ -298,7 +405,7 @@
                 type: 'bar',
                 data: {
                     labels: ['STBLKK', 'PB', 'Asuransi Baru', 'Asuransi Lama', 'BBM Subsidi', 'BBM Non-Subsidi'],
-                    datasets: [{
+                    datasets: [withBarStyle({
                         label: 'Pelaporan',
                         data: [25, 15, 30, 12, 35, 20],
                         backgroundColor: [
@@ -308,19 +415,11 @@
                             '#f59e0b',
                             '#ef4444',
                             '#0891b2'
-                        ],
-                        borderRadius: 5,
-                        borderSkipped: false
-                    }]
+                        ]
+                    })]
                 },
                 options: {
                     ...chartOptions,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'bottom'
-                        }
-                    },
                     scales: {
                         y: {
                             beginAtZero: true,
@@ -339,46 +438,40 @@
                 data: {
                     labels: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'],
                     datasets: [
-                        {
+                        withBarStyle({
                             label: 'STBLKK',
                             data: [45, 50, 48, 55],
                             backgroundColor: '#1e3a8a'
-                        },
-                        {
+                        }),
+                        withBarStyle({
                             label: 'PB',
                             data: [38, 42, 40, 48],
                             backgroundColor: '#3b82f6'
-                        },
-                        {
+                        }),
+                        withBarStyle({
                             label: 'Asuransi Baru',
                             data: [52, 58, 55, 65],
                             backgroundColor: '#10b981'
-                        },
-                        {
+                        }),
+                        withBarStyle({
                             label: 'Asuransi Lama',
                             data: [28, 32, 30, 38],
                             backgroundColor: '#f59e0b'
-                        },
-                        {
+                        }),
+                        withBarStyle({
                             label: 'BBM Subsidi',
                             data: [65, 72, 68, 80],
                             backgroundColor: '#ef4444'
-                        },
-                        {
+                        }),
+                        withBarStyle({
                             label: 'BBM Non-Subsidi',
                             data: [42, 48, 45, 55],
                             backgroundColor: '#0891b2'
-                        }
+                        })
                     ]
                 },
                 options: {
                     ...chartOptions,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'bottom'
-                        }
-                    },
                     scales: {
                         y: {
                             beginAtZero: true,
@@ -395,51 +488,23 @@
 
             // Chart Tahunan
             const ctxTahunan = document.getElementById('chartTahunan').getContext('2d');
+            const baseYear = new Date().getFullYear();
+            const yearLabels = Array.from({ length: 5 }, (_, idx) => baseYear - (4 - idx));
             charts.tahunan = new Chart(ctxTahunan, {
-                type: 'bar',
+                type: 'line',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                    labels: yearLabels,
                     datasets: [
-                        {
-                            label: 'STBLKK',
-                            data: [70, 75, 72, 78, 80, 82, 85, 83, 81, 79, 77, 75],
-                            backgroundColor: '#1e3a8a'
-                        },
-                        {
-                            label: 'PB',
-                            data: [60, 65, 62, 68, 70, 72, 75, 73, 71, 69, 67, 65],
-                            backgroundColor: '#3b82f6'
-                        },
-                        {
-                            label: 'Asuransi Baru',
-                            data: [75, 80, 77, 83, 85, 87, 90, 88, 86, 84, 82, 80],
-                            backgroundColor: '#10b981'
-                        },
-                        {
-                            label: 'Asuransi Lama',
-                            data: [40, 42, 41, 45, 47, 49, 52, 50, 48, 46, 44, 42],
-                            backgroundColor: '#f59e0b'
-                        },
-                        {
-                            label: 'BBM Subsidi',
-                            data: [85, 90, 87, 93, 95, 97, 100, 98, 96, 94, 92, 90],
-                            backgroundColor: '#ef4444'
-                        },
-                        {
-                            label: 'BBM Non-Subsidi',
-                            data: [55, 60, 57, 63, 65, 67, 70, 68, 66, 64, 62, 60],
-                            backgroundColor: '#0891b2'
-                        }
+                        buildLineDataset('STBLKK', yearLabels.map(() => 0), '#1e3a8a'),
+                        buildLineDataset('PB', yearLabels.map(() => 0), '#3b82f6'),
+                        buildLineDataset('Asuransi Baru', yearLabels.map(() => 0), '#10b981'),
+                        buildLineDataset('Asuransi Lama', yearLabels.map(() => 0), '#f59e0b'),
+                        buildLineDataset('BBM Subsidi', yearLabels.map(() => 0), '#ef4444'),
+                        buildLineDataset('BBM Non-Subsidi', yearLabels.map(() => 0), '#0891b2')
                     ]
                 },
                 options: {
                     ...chartOptions,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'bottom'
-                        }
-                    },
                     scales: {
                         y: {
                             beginAtZero: true,
@@ -457,123 +522,168 @@
 
         // Load functions for data
         function loadHarianData() {
-            try {
-                const selectedDate = document.getElementById('daySelector').value;
-                const chartInstance = charts.harian;
-                
-                if (!selectedDate || !chartInstance) return;
+            const selectedDate = document.getElementById('daySelector').value;
+            const chartInstance = charts.harian;
 
-                // Generate random data for the selected day
-                const categories = ['STBLKK', 'PB', 'Asuransi Baru', 'Asuransi Lama', 'BBM Subsidi', 'BBM Non-Subsidi'];
-                const mockData = {};
-                
-                categories.forEach(cat => {
-                    mockData[cat] = Math.floor(Math.random() * 50) + 10;
+            if (!selectedDate || !chartInstance) return;
+
+            fetch(`/api/laporan-harian?start=${selectedDate}&end=${selectedDate}`)
+                .then((response) => response.json())
+                .then((result) => {
+                    const data = result.success ? (result.data || []) : [];
+                    const totals = CATEGORY_KEYS.map(item => sumCategory(data, item.key));
+
+                    chartInstance.data.labels = CATEGORY_KEYS.map(item => item.label);
+                    chartInstance.data.datasets[0].data = totals;
+                    chartInstance.data.datasets[0].label = `Pelaporan - ${selectedDate}`;
+                    chartInstance.update('active');
+
+                    const tableBody = document.querySelector('#tableHarianBody');
+                    if (tableBody) {
+                        tableBody.innerHTML = '';
+                        const totalSum = totals.reduce((a, b) => a + b, 0) || 1;
+                        CATEGORY_KEYS.forEach((item, idx) => {
+                            const value = totals[idx] || 0;
+                            const percentage = ((value / totalSum) * 100).toFixed(1);
+                            const tr = document.createElement('tr');
+                            const tdCat = document.createElement('td');
+                            const strongCat = document.createElement('strong');
+                            strongCat.textContent = item.label; tdCat.appendChild(strongCat); tr.appendChild(tdCat);
+                            const tdVal = document.createElement('td');
+                            tdVal.className = 'text-end';
+                            const span = document.createElement('span');
+                            span.className = 'badge bg-primary';
+                            span.textContent = value; tdVal.appendChild(span); tr.appendChild(tdVal);
+                            const tdPerc = document.createElement('td');
+                            tdPerc.className = 'text-end';
+                            tdPerc.textContent = percentage + '%'; tr.appendChild(tdPerc);
+                            tableBody.appendChild(tr);
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error loading harian data:', error);
                 });
-
-                // Update chart
-                chartInstance.data.datasets[0].data = Object.values(mockData);
-                chartInstance.data.datasets[0].label = `Pelaporan - ${selectedDate}`;
-                chartInstance.update('active');
-
-                // Update table
-                const tableBody = document.querySelector('#tableHarianBody');
-                if (tableBody) {
-                    tableBody.innerHTML = '';
-                    const total = Object.values(mockData).reduce((a, b) => a + b, 0);
-                    Object.entries(mockData).forEach(([category, value]) => {
-                        const percentage = ((value / total) * 100).toFixed(1);
-                        const tr = document.createElement('tr');
-                        const tdCat = document.createElement('td'); const strongCat = document.createElement('strong'); strongCat.textContent = category; tdCat.appendChild(strongCat); tr.appendChild(tdCat);
-                        const tdVal = document.createElement('td'); tdVal.className = 'text-end'; const span = document.createElement('span'); span.className = 'badge bg-primary'; span.textContent = value; tdVal.appendChild(span); tr.appendChild(tdVal);
-                        const tdPerc = document.createElement('td'); tdPerc.className = 'text-end'; tdPerc.textContent = percentage + '%'; tr.appendChild(tdPerc);
-                        tableBody.appendChild(tr);
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading harian data:', error);
-            }
         }
 
         function loadBulanData() {
-            try {
-                const selectedMonth = document.getElementById('monthSelector').value;
-                const chartInstance = charts.bulanan;
-                
-                if (!selectedMonth || !chartInstance) return;
+            const selectedMonth = document.getElementById('monthSelector').value;
+            const chartInstance = charts.bulanan;
 
-                const categories = ['STBLKK', 'PB', 'Asuransi Baru', 'Asuransi Lama', 'BBM Subsidi', 'BBM Non-Subsidi'];
-                const colors = ['#1e3a8a', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#0891b2'];
+            if (!selectedMonth || !chartInstance) return;
 
-                // Generate data for 4 weeks
-                chartInstance.data.datasets = categories.map((cat, idx) => ({
-                    label: cat,
-                    data: [
-                        Math.floor(Math.random() * 60) + 30,
-                        Math.floor(Math.random() * 70) + 35,
-                        Math.floor(Math.random() * 65) + 32,
-                        Math.floor(Math.random() * 75) + 40
-                    ],
-                    backgroundColor: colors[idx]
-                }));
-                chartInstance.update('active');
+            const [yearStr, monthStr] = selectedMonth.split('-');
+            const year = parseInt(yearStr, 10);
+            const month = parseInt(monthStr, 10) - 1;
+            const startDate = new Date(year, month, 1);
+            const endDate = new Date(year, month + 1, 0);
+            const startValue = formatDateValue(startDate);
+            const endValue = formatDateValue(endDate);
 
-                // Update table
-                const tableBody = document.querySelector('#tableBulanBody');
-                if (tableBody) {
-                    tableBody.innerHTML = '';
-                    const weeks = ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'];
-                    weeks.forEach((week, idx) => {
-                        const total = chartInstance.data.datasets.reduce((sum, ds) => sum + ds.data[idx], 0);
-                        const avg = Math.round(total / chartInstance.data.datasets.length);
-                        const tr = document.createElement('tr');
-                        const tdWeek = document.createElement('td'); const strongWeek = document.createElement('strong'); strongWeek.textContent = week; tdWeek.appendChild(strongWeek); tr.appendChild(tdWeek);
-                        const tdTot = document.createElement('td'); tdTot.className = 'text-end'; const span = document.createElement('span'); span.className = 'badge bg-success'; span.textContent = total; tdTot.appendChild(span); tr.appendChild(tdTot);
-                        const tdAvg = document.createElement('td'); tdAvg.className = 'text-end'; tdAvg.textContent = avg; tr.appendChild(tdAvg);
-                        tableBody.appendChild(tr);
+            fetch(`/api/laporan-harian?start=${startValue}&end=${endValue}`)
+                .then((response) => response.json())
+                .then((result) => {
+                    const data = result.success ? (result.data || []) : [];
+                    const weekBuckets = Array.from({ length: 4 }, () => ({
+                        stblkk: 0,
+                        pb: 0,
+                        asuransi_baru: 0,
+                        asuransi_lama: 0,
+                        bbm_subsidi_surat: 0,
+                        bbm_non_surat: 0
+                    }));
+
+                    data.forEach((item) => {
+                        const date = new Date(item.tanggal);
+                        const weekIndex = Math.min(3, Math.floor((date.getDate() - 1) / 7));
+                        CATEGORY_KEYS.forEach((category) => {
+                            weekBuckets[weekIndex][category.key] += parseInt(item[category.key], 10) || 0;
+                        });
                     });
-                }
-            } catch (error) {
-                console.error('Error loading bulanan data:', error);
-            }
+
+                    chartInstance.data.labels = ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'];
+                    chartInstance.data.datasets = CATEGORY_KEYS.map((category) => ({
+                        label: category.label,
+                        data: weekBuckets.map(bucket => bucket[category.key] || 0),
+                        backgroundColor: category.color
+                    }));
+                    chartInstance.update('active');
+
+                    const tableBody = document.querySelector('#tableBulanBody');
+                    if (tableBody) {
+                        tableBody.innerHTML = '';
+                        chartInstance.data.labels.forEach((week, idx) => {
+                            const total = chartInstance.data.datasets.reduce((sum, ds) => sum + ds.data[idx], 0);
+                            const avg = Math.round(total / CATEGORY_KEYS.length);
+                            const tr = document.createElement('tr');
+                            const tdWeek = document.createElement('td');
+                            const strongWeek = document.createElement('strong');
+                            strongWeek.textContent = week; tdWeek.appendChild(strongWeek); tr.appendChild(tdWeek);
+                            const tdTot = document.createElement('td');
+                            tdTot.className = 'text-end';
+                            const span = document.createElement('span');
+                            span.className = 'badge bg-success';
+                            span.textContent = total; tdTot.appendChild(span); tr.appendChild(tdTot);
+                            const tdAvg = document.createElement('td');
+                            tdAvg.className = 'text-end'; tdAvg.textContent = avg; tr.appendChild(tdAvg);
+                            tableBody.appendChild(tr);
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error loading bulanan data:', error);
+                });
         }
 
         function loadTahunData() {
-            try {
-                const selectedYear = document.getElementById('yearSelector').value;
-                const chartInstance = charts.tahunan;
-                
-                if (!selectedYear || !chartInstance) return;
+            const selectedYear = document.getElementById('yearSelector').value;
+            const chartInstance = charts.tahunan;
 
-                const categories = ['STBLKK', 'PB', 'Asuransi Baru', 'Asuransi Lama', 'BBM Subsidi', 'BBM Non-Subsidi'];
-                const colors = ['#1e3a8a', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#0891b2'];
+            if (!selectedYear || !chartInstance) return;
 
-                // Generate data for 12 months
-                chartInstance.data.datasets = categories.map((cat, idx) => ({
-                    label: cat,
-                    data: Array.from({length: 12}, () => Math.floor(Math.random() * 80) + 50),
-                    backgroundColor: colors[idx]
-                }));
-                chartInstance.update('active');
+            const baseYear = parseInt(selectedYear, 10) || new Date().getFullYear();
+            const years = Array.from({ length: 5 }, (_, i) => baseYear - (4 - i));
+            const yearSet = new Set(years.map(String));
 
-                // Update table
-                const tableBody = document.querySelector('#tableTahunBody');
-                if (tableBody) {
-                    tableBody.innerHTML = '';
-                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-                    months.forEach((month, idx) => {
-                        const total = chartInstance.data.datasets.reduce((sum, ds) => sum + ds.data[idx], 0);
-                        const avg = Math.round(total / chartInstance.data.datasets.length);
-                        const tr = document.createElement('tr');
-                        const tdMonth = document.createElement('td'); const strongMonth = document.createElement('strong'); strongMonth.textContent = month; tdMonth.appendChild(strongMonth); tr.appendChild(tdMonth);
-                        const tdTot = document.createElement('td'); tdTot.className = 'text-end'; const span = document.createElement('span'); span.className = 'badge bg-info'; span.textContent = total; tdTot.appendChild(span); tr.appendChild(tdTot);
-                        const tdAvg = document.createElement('td'); tdAvg.className = 'text-end'; tdAvg.textContent = avg; tr.appendChild(tdAvg);
-                        tableBody.appendChild(tr);
+            fetch('/api/laporan-harian/rekap/tahunan')
+                .then((response) => response.json())
+                .then((result) => {
+                    const data = result.success ? (result.data || []) : [];
+                    const dataMap = new Map(data.map(item => [String(item.tahun), item]));
+
+                    chartInstance.data.labels = years;
+                    chartInstance.data.datasets = CATEGORY_KEYS.map((category) => {
+                        const values = years.map((year) => {
+                            const entry = dataMap.get(String(year));
+                            return entry ? (parseInt(entry[category.key], 10) || 0) : 0;
+                        });
+                        return buildLineDataset(category.label, values, category.color);
                     });
-                }
-            } catch (error) {
-                console.error('Error loading tahunan data:', error);
-            }
+                    chartInstance.update('active');
+
+                    const tableBody = document.querySelector('#tableTahunBody');
+                    if (tableBody) {
+                        tableBody.innerHTML = '';
+                        years.forEach((year, idx) => {
+                            const total = chartInstance.data.datasets.reduce((sum, ds) => sum + ds.data[idx], 0);
+                            const avg = Math.round(total / CATEGORY_KEYS.length);
+                            const tr = document.createElement('tr');
+                            const tdYear = document.createElement('td');
+                            const strongYear = document.createElement('strong');
+                            strongYear.textContent = year; tdYear.appendChild(strongYear); tr.appendChild(tdYear);
+                            const tdTot = document.createElement('td');
+                            tdTot.className = 'text-end';
+                            const span = document.createElement('span');
+                            span.className = 'badge bg-info'; span.textContent = total; tdTot.appendChild(span); tr.appendChild(tdTot);
+                            const tdAvg = document.createElement('td');
+                            tdAvg.className = 'text-end'; tdAvg.textContent = avg; tr.appendChild(tdAvg);
+                            tableBody.appendChild(tr);
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error loading tahunan data:', error);
+                });
         }
 
         // Initialize with today's date and load initial data
