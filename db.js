@@ -127,8 +127,7 @@ function getDbStatus() {
   };
 }
 
-module.exports = {
-  pool,
-  testConnection,
-  getDbStatus
-};
+module.exports = pool;
+module.exports.pool = pool;
+module.exports.testConnection = testConnection;
+module.exports.getDbStatus = getDbStatus;
