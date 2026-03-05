@@ -3,10 +3,18 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
-require('dotenv').config();
+require('dotenv').config({
+    path: path.join(__dirname, '.env')
+});
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const parsedPort = Number(process.env.PORT);
+const PORT = Number.isInteger(parsedPort) && parsedPort > 0 ? parsedPort : 3000;
+const isProduction = process.env.NODE_ENV === 'production';
+const SHOW_ERROR_DETAILS = process.env.ADMIN_SHOW_ERROR_DETAILS === 'true';
+const SHOW_HEALTH_DETAILS = process.env.HEALTH_SHOW_DETAILS === 'true';
+
+app.disable('x-powered-by');
 
 // Import routes
 const laporanHarianRoutes = require('./routes/laporanHarian');
@@ -15,6 +23,7 @@ const googleSheetsRoutes = require('./routes/googleSheets');
 const adminRoutes = require('./routes/admin');
 const googleSheetsDebug = require('./routes/googleSheetsDebug');
 const googleAuthRoutes = require('./routes/googleAuth');
+const { testConnection, getDbStatus } = require('./db');
 
 // Create uploads folder if not exists
 const uploadsDir = path.join(__dirname, 'public', 'uploads');
@@ -26,7 +35,11 @@ if (!fs.existsSync(uploadsDir)) {
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public'), {
+    index: false,
+    etag: true,
+    maxAge: isProduction ? '1d' : 0
+}));
 
 // API Routes
 app.use('/api/laporan-harian', laporanHarianRoutes);
@@ -68,6 +81,25 @@ app.get('/admin-google-sheets', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin-google-sheets.html'));
 });
 
+app.get('/api/health', (req, res) => {
+    const dbStatus = getDbStatus();
+    const statusCode = dbStatus.connected ? 200 : 503;
+    const response = {
+        success: dbStatus.connected,
+        app: 'ok',
+        db: dbStatus.connected ? 'up' : 'down',
+        timestamp: new Date().toISOString()
+    };
+
+    if (!isProduction || SHOW_HEALTH_DETAILS) {
+        response.dbError = dbStatus.lastError || null;
+    }
+
+    return res.status(statusCode).json({
+        ...response
+    });
+});
+
 // 404 Handler
 app.use((req, res) => {
     res.status(404).json({ success: false, message: 'Route tidak ditemukan' });
@@ -75,26 +107,74 @@ app.use((req, res) => {
 
 // Error Handler
 app.use((err, req, res, next) => {
-    console.error('Error:', err.stack);
-    res.status(500).json({ success: false, message: 'Terjadi kesalahan server', error: err.message });
-});
+    const errorId = require('crypto').randomBytes(6).toString('hex');
+    console.error('Unhandled error:', {
+        errorId,
+        message: err?.message,
+        code: err?.code,
+        stack: err?.stack
+    });
 
-// Start Server
-const server = app.listen(PORT, '0.0.0.0', () => {
-    console.log(`\n✅ Server berjalan di http://localhost:${PORT}`);
-    console.log('\n📊 Akses Aplikasi:');
-    console.log(`   Dashboard: http://localhost:${PORT}`);
-    console.log(`   Admin: http://localhost:${PORT}/admin\n`);
-});
+    const response = {
+        success: false,
+        message: 'Terjadi kesalahan server',
+        errorId
+    };
 
-server.on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-        console.error(`\n❌ Port ${PORT} sudah digunakan!`);
-        console.error('Solusi: Stop proses lain atau ubah PORT di .env\n');
-    } else {
-        console.error(`\n❌ Server Error: ${err.message}\n`);
+    if ((!isProduction || SHOW_ERROR_DETAILS) && err) {
+        response.error = err.message || String(err);
+        if (err.code) response.code = err.code;
     }
-    process.exit(1);
+
+    res.status(err?.statusCode || 500).json(response);
 });
+
+async function startServer() {
+    let dbConnectedAtBoot = false;
+    try {
+        await testConnection();
+        dbConnectedAtBoot = true;
+        console.log('✅ Database terkoneksi');
+    } catch (error) {
+        console.error('\n⚠️ Database belum siap saat startup, server tetap dijalankan.');
+        console.error('Detail:', {
+            message: error?.message,
+            code: error?.code,
+            errno: error?.errno,
+            sqlState: error?.sqlState
+        });
+    }
+
+    const server = app.listen(PORT, '0.0.0.0', () => {
+        console.log(`\n✅ Server berjalan di http://localhost:${PORT}`);
+        console.log('\n📊 Akses Aplikasi:');
+        console.log(`   Dashboard: http://localhost:${PORT}`);
+        console.log(`   Admin: http://localhost:${PORT}/admin`);
+        console.log(`   Health: http://localhost:${PORT}/api/health\n`);
+        if (!dbConnectedAtBoot) {
+            console.log('ℹ️ Cek /api/health untuk status database.');
+        }
+    });
+
+    server.on('error', (err) => {
+        if (err.code === 'EADDRINUSE') {
+            console.error(`\n❌ Port ${PORT} sudah digunakan!`);
+            console.error('Solusi: Stop proses lain atau ubah PORT di .env\n');
+        } else {
+            console.error(`\n❌ Server Error: ${err.message}\n`);
+        }
+        process.exit(1);
+    });
+
+    setInterval(async () => {
+        try {
+            await testConnection();
+        } catch (_) {
+            // Status DB disimpan di db.js; tidak perlu crash server.
+        }
+    }, Number(process.env.DB_HEALTHCHECK_INTERVAL_MS || 30000));
+}
+
+startServer();
 
 module.exports = app;
