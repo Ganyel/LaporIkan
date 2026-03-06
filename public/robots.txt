@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Halaman admin tidak perlu diindeks
+Disallow: /admin
+Disallow: /admin-google-sheets
+Disallow: /login
+
+Sitemap: https://ppntegalsari.com/sitemap.xml

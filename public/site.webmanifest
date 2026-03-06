@@ -1,0 +1,21 @@
+{
+  "name": "PPN Tegalsari - Sistem Pelaporan",
+  "short_name": "PPN Tegalsari",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e3a8a",
+  "icons": [
+    {
+      "src": "/images/Logo1.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/Logo1.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
