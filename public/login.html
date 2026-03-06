@@ -271,7 +271,7 @@
 
         .form-control {
             padding: 12px 15px;
-            border: 1px solid #e6eefc;
+            border: 1px solid #cbd5e1;
             border-radius: 8px;
             font-size: 1rem;
             transition: all 0.18s ease;
@@ -285,7 +285,7 @@
         }
 
         .form-control::placeholder {
-            color: #9ca3af;
+            color: #64748b;
         }
 
         .form-control.is-invalid {
@@ -579,16 +579,34 @@
         }
 
         @media (max-width: 900px) {
+            body {
+                align-items: flex-start;
+            }
+
+            .login-container {
+                padding: 12px;
+                align-items: flex-start;
+            }
+
             .login-split {
                 grid-template-columns: 1fr;
             }
 
             .login-side {
                 order: 2;
+                padding: 24px 20px;
             }
 
             .login-main {
                 order: 1;
+            }
+
+            .login-body {
+                padding: 20px;
+            }
+
+            .login-footer-row {
+                margin-top: 1rem;
             }
         }
     </style>
@@ -634,7 +652,7 @@
 
                     <div class="login-body">
                         <!-- Alert -->
-                        <div id="alertBox"></div>
+                        <div id="alertBox" role="status" aria-live="polite"></div>
 
                         <!-- Google Sign In Button -->
                         <button type="button" class="btn btn-google w-100 mb-3" onclick="signInWithGoogle()" aria-label="Sign in with Google">
@@ -648,7 +666,7 @@
                         </button>
 
                         <!-- Divider -->
-                        <div class="login-divider">or</div>
+                        <div class="login-divider">atau</div>
 
                         <form id="loginForm" onsubmit="handleLogin(event)">
                             <!-- Username/Email -->
@@ -707,16 +725,10 @@
                                 </div>
 
                                 <!-- Login Button with spinner -->
-                                <button type="submit" class="btn btn-login">
+                                <button type="submit" class="btn btn-login" aria-busy="false">
                                     <span class="btn-spinner" style="margin-right:8px;width:16px;height:16px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:text-bottom;"></span>
-                                    <span class="btn-text">Log In</span>
+                                    <span class="btn-text">Masuk</span>
                                 </button>
-                            </div>
-
-                            <!-- Loading -->
-                            <div class="loading" id="loading">
-                                <span class="spinner"></span>
-                                <span>Sedang memverifikasi...</span>
                             </div>
                         </form>
                     </div>
@@ -952,18 +964,17 @@
             const button = document.querySelector('.btn-login');
             const spinner = button.querySelector('.btn-spinner');
             const text = button.querySelector('.btn-text');
-            const loadingBlock = document.getElementById('loading');
 
             if (show) {
                 if (spinner) spinner.style.display = 'inline-block';
                 if (text) text.textContent = 'Sedang memverifikasi...';
+                button.setAttribute('aria-busy', 'true');
                 button.disabled = true;
-                if (loadingBlock) loadingBlock.style.display = 'block';
             } else {
                 if (spinner) spinner.style.display = 'none';
-                if (text) text.textContent = 'Log In';
+                if (text) text.textContent = 'Masuk';
+                button.setAttribute('aria-busy', 'false');
                 button.disabled = false;
-                if (loadingBlock) loadingBlock.style.display = 'none';
             }
         }
 
