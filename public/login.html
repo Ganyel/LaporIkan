@@ -784,19 +784,12 @@
             const name = params.get('name');
             const picture = params.get('picture');
             if (token) {
-                // store token consistently via persistToken() (remember by default from OAuth)
-                try {
-                    persistToken(token, true, email || '');
-                } catch (e) {
-                    // fallback to simple storage if persistToken fails
-                    localStorage.setItem('adminToken', token);
-                    if (email) localStorage.setItem('adminUsername', email);
-                }
+                persistToken(token, email || '');
                 if (email) localStorage.setItem('adminEmail', email);
                 if (name) localStorage.setItem('adminName', name);
                 if (picture) localStorage.setItem('adminPicture', picture);
                 history.replaceState(null, '', '/login');
-                window.location.href = '/';
+                window.location.href = '/admin';
             }
         }
 
@@ -852,17 +845,16 @@
 
         function eraseCookie(name){ setCookie(name,'',-1); }
 
-        // Persist token depending on rememberMe
-        function persistToken(token, rememberMe, username) {
-            // Store token in localStorage or sessionStorage only.
-            // Avoid setting cookies from client-side for security (HttpOnly cookies should be set server-side).
-            if (rememberMe) {
-                localStorage.setItem('adminToken', token);
-                if (username) localStorage.setItem('adminUsername', username);
-            } else {
-                sessionStorage.setItem('adminToken', token);
-                if (username) sessionStorage.setItem('adminUsername', username);
+        // Persist token ke localStorage sesuai flow auth admin
+        function persistToken(token, username) {
+            localStorage.setItem('adminToken', token);
+            if (username) {
+                localStorage.setItem('adminUsername', username);
             }
+
+            // Bersihkan legacy token jika ada
+            sessionStorage.removeItem('adminToken');
+            sessionStorage.removeItem('adminUsername');
         }
 
         // Handle login form submission (AJAX, no reload)
@@ -899,8 +891,8 @@
                     return;
                 }
 
-                // persist token
-                persistToken(data.token, rememberMe, username);
+                // persist token sesuai requirement
+                persistToken(data.token, data.username || username);
 
                 // remember username for convenience
                 if (rememberMe) localStorage.setItem('rememberedUsername', username);

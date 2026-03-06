@@ -21,12 +21,24 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function getAdminToken() {
-    return localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+    return localStorage.getItem('adminToken');
 }
 
 function getAuthHeaders() {
-    const token = getAdminToken();
-    return token ? { Authorization: `Bearer ${token}` } : {};
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('adminToken')
+    };
+}
+
+function handleInvalidToken(result) {
+    if (result && result.success === false && result.message === 'Token tidak valid atau expired') {
+        localStorage.removeItem('adminToken');
+        window.location.href = '/login';
+        return true;
+    }
+
+    return false;
 }
 
 // ==========================================
@@ -44,6 +56,10 @@ async function loadLaporanData() {
             }
         });
         const result = await response.json();
+
+        if (handleInvalidToken(result)) {
+            return;
+        }
 
         if (!result.success) {
             throw new Error(result.message);
@@ -168,6 +184,10 @@ async function submitForm(event) {
 
         const result = await response.json();
 
+        if (handleInvalidToken(result)) {
+            return;
+        }
+
         if (!result.success) {
             throw new Error(result.message);
         }
@@ -193,6 +213,10 @@ async function editData(tanggal) {
             }
         });
         const result = await response.json();
+
+        if (handleInvalidToken(result)) {
+            return;
+        }
 
         if (!result.success) {
             throw new Error(result.message);
@@ -235,6 +259,10 @@ async function deleteData(tanggal) {
         });
 
         const result = await response.json();
+
+        if (handleInvalidToken(result)) {
+            return;
+        }
 
         if (!result.success) {
             throw new Error(result.message);

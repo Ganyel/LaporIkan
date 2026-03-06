@@ -2,6 +2,12 @@
 // INITIALIZE
 // ==========================================
 document.addEventListener('DOMContentLoaded', function () {
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+        window.location.href = '/login';
+        return;
+    }
+
     loadIkanData();
     
     // Event listener untuk preview foto
@@ -10,13 +16,36 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+function getAuthHeaders() {
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('adminToken')
+    };
+}
+
+function handleInvalidToken(result) {
+    if (result && result.success === false && result.message === 'Token tidak valid atau expired') {
+        localStorage.removeItem('adminToken');
+        window.location.href = '/login';
+        return true;
+    }
+
+    return false;
+}
+
 // ==========================================
 // LOAD IKAN DATA
 // ==========================================
 async function loadIkanData() {
     try {
-        const response = await fetch('/api/ikan');
+        const response = await fetch('/api/ikan', {
+            headers: getAuthHeaders()
+        });
         const result = await response.json();
+
+        if (handleInvalidToken(result)) {
+            return;
+        }
 
         if (!result.success) {
             throw new Error(result.message);
@@ -155,13 +184,15 @@ async function submitFormIkan(event) {
 
         response = await fetch(url, {
             method: method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: getAuthHeaders(),
             body: JSON.stringify(payload)
         });
 
         const result = await response.json();
+
+        if (handleInvalidToken(result)) {
+            return;
+        }
 
         if (!result.success) {
             throw new Error(result.message);
@@ -182,8 +213,14 @@ async function submitFormIkan(event) {
 // ==========================================
 async function editIkan(id) {
     try {
-        const response = await fetch(`/api/ikan/${id}`);
+        const response = await fetch(`/api/ikan/${id}`, {
+            headers: getAuthHeaders()
+        });
         const result = await response.json();
+
+        if (handleInvalidToken(result)) {
+            return;
+        }
 
         if (!result.success) {
             throw new Error(result.message);
@@ -236,10 +273,15 @@ async function deleteIkan(id) {
 
     try {
         const response = await fetch(`/api/ikan/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: getAuthHeaders()
         });
 
         const result = await response.json();
+
+        if (handleInvalidToken(result)) {
+            return;
+        }
 
         if (!result.success) {
             throw new Error(result.message);
