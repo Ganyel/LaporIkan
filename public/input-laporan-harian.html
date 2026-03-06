@@ -403,6 +403,23 @@
             return false;
         }
 
+        async function parseApiResponse(response) {
+            const contentType = response.headers.get('content-type') || '';
+
+            if (!contentType.includes('application/json')) {
+                if (response.status === 401 || response.status === 403 || response.redirected) {
+                    localStorage.removeItem('adminToken');
+                    window.location.href = '/login';
+                    throw new Error('Sesi login berakhir. Silakan login ulang.');
+                }
+
+                const raw = await response.text();
+                throw new Error('Response server bukan JSON: ' + raw.slice(0, 120));
+            }
+
+            return response.json();
+        }
+
         function sumCategory(items, key) {
             return items.reduce((sum, item) => sum + (parseInt(item[key], 10) || 0), 0);
         }
@@ -549,7 +566,7 @@
                 method: 'GET',
                 headers: getAuthHeaders()
             })
-                .then((response) => response.json())
+                .then((response) => parseApiResponse(response))
                 .then((result) => {
                     if (handleInvalidToken(result)) {
                         return;
@@ -609,7 +626,7 @@
                 method: 'GET',
                 headers: getAuthHeaders()
             })
-                .then((response) => response.json())
+                .then((response) => parseApiResponse(response))
                 .then((result) => {
                     if (handleInvalidToken(result)) {
                         return;
@@ -681,7 +698,7 @@
                 method: 'GET',
                 headers: getAuthHeaders()
             })
-                .then((response) => response.json())
+                .then((response) => parseApiResponse(response))
                 .then((result) => {
                     if (handleInvalidToken(result)) {
                         return;

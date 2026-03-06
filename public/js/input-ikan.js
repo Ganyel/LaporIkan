@@ -44,6 +44,23 @@ function handleInvalidToken(result) {
     return false;
 }
 
+async function parseApiResponse(response) {
+    const contentType = response.headers.get('content-type') || '';
+
+    if (!contentType.includes('application/json')) {
+        if (response.status === 401 || response.status === 403 || response.redirected) {
+            localStorage.removeItem('adminToken');
+            window.location.href = '/login';
+            throw new Error('Sesi login berakhir. Silakan login ulang.');
+        }
+
+        const raw = await response.text();
+        throw new Error('Response server bukan JSON: ' + raw.slice(0, 120));
+    }
+
+    return response.json();
+}
+
 // ==========================================
 // SUBMIT FORM IKAN
 // ==========================================
@@ -107,7 +124,7 @@ async function submitFormIkan(event) {
             body: JSON.stringify(payload)
         });
 
-        const result = await response.json();
+        const result = await parseApiResponse(response);
 
         if (handleInvalidToken(result)) {
             return;
@@ -140,7 +157,7 @@ async function loadIkanDataList() {
         const response = await fetch('/api/ikan', {
             headers: getAuthHeaders()
         });
-        const result = await response.json();
+        const result = await parseApiResponse(response);
 
         if (handleInvalidToken(result)) {
             return;
@@ -268,7 +285,7 @@ async function editIkan(id) {
         const response = await fetch(`/api/ikan/${id}`, {
             headers: getAuthHeaders()
         });
-        const result = await response.json();
+        const result = await parseApiResponse(response);
 
         if (handleInvalidToken(result)) {
             return;
@@ -348,7 +365,7 @@ async function deleteIkan(id) {
             headers: getAuthHeaders()
         });
 
-        const result = await response.json();
+        const result = await parseApiResponse(response);
 
         if (handleInvalidToken(result)) {
             return;

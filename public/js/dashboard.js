@@ -37,6 +37,23 @@ function handleInvalidToken(result) {
     return false;
 }
 
+async function parseApiResponse(response) {
+    const contentType = response.headers.get('content-type') || '';
+
+    if (!contentType.includes('application/json')) {
+        if (response.status === 401 || response.status === 403 || response.redirected) {
+            localStorage.removeItem('adminToken');
+            window.location.href = '/login';
+            throw new Error('Sesi login berakhir. Silakan login ulang.');
+        }
+
+        const raw = await response.text();
+        throw new Error('Response server bukan JSON: ' + raw.slice(0, 120));
+    }
+
+    return response.json();
+}
+
 // ==========================================
 // INITIALIZE
 // ==========================================
@@ -574,7 +591,7 @@ async function loadDataHarian(startDate, endDate) {
             method: 'GET',
             headers: getAuthHeaders()
         });
-        const result = await response.json();
+        const result = await parseApiResponse(response);
 
         if (handleInvalidToken(result)) {
             return;
@@ -658,7 +675,7 @@ async function loadDataBulanan(yearParam = null, monthParam = 'all') {
             method: 'GET',
             headers: getAuthHeaders()
         });
-        const result = await response.json();
+        const result = await parseApiResponse(response);
 
         if (handleInvalidToken(result)) {
             return;
@@ -745,7 +762,7 @@ async function loadDataTahunan(yearParam = '') {
             method: 'GET',
             headers: getAuthHeaders()
         });
-        const result = await response.json();
+        const result = await parseApiResponse(response);
 
         if (handleInvalidToken(result)) {
             return;

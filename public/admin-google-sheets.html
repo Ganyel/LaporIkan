@@ -304,6 +304,23 @@
             return false;
         }
 
+        async function parseApiResponse(response) {
+            const contentType = response.headers.get('content-type') || '';
+
+            if (!contentType.includes('application/json')) {
+                if (response.status === 401 || response.status === 403 || response.redirected) {
+                    localStorage.removeItem('adminToken');
+                    window.location.href = '/login';
+                    throw new Error('Sesi login berakhir. Silakan login ulang.');
+                }
+
+                const raw = await response.text();
+                throw new Error('Response server bukan JSON: ' + raw.slice(0, 120));
+            }
+
+            return response.json();
+        }
+
         function fetchWithAuth(url, options = {}) {
             const token = getAdminToken();
             if (!token) {
@@ -323,7 +340,7 @@
         async function checkConnectionStatus() {
             try {
                 const response = await fetchWithAuth('/api/data-sheet/laporan-harian');
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (handleInvalidToken(result)) {
                     return;
@@ -360,7 +377,7 @@
         async function refreshLaporanData() {
             try {
                 const response = await fetchWithAuth('/api/data-sheet/laporan-harian');
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (handleInvalidToken(result)) {
                     return;
@@ -416,7 +433,7 @@
         async function refreshIkanData() {
             try {
                 const response = await fetchWithAuth('/api/data-sheet/ikan');
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (handleInvalidToken(result)) {
                     return;
@@ -478,7 +495,7 @@
                     method: 'DELETE'
                 });
 
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (handleInvalidToken(result)) {
                     return;
@@ -504,7 +521,7 @@
                     method: 'DELETE'
                 });
 
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (handleInvalidToken(result)) {
                     return;
@@ -542,7 +559,7 @@
                     body: JSON.stringify(parsedData)
                 });
 
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (handleInvalidToken(result)) {
                     return;
