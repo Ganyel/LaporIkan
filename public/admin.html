@@ -505,7 +505,7 @@
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
-    <script src="/js/admin.js"></script>
+    <script src="/js/admin.js?v=20260307-1"></script>
     
     <!-- Google Sheets Integration Script -->
     <script>
@@ -550,6 +550,76 @@
             }
 
             return response.json();
+        }
+
+        function confirmAction(message, title = 'Konfirmasi') {
+            if (typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+                return Promise.resolve(confirm(message));
+            }
+
+            return new Promise((resolve) => {
+                let modalEl = document.getElementById('confirmActionModalInline');
+
+                if (!modalEl) {
+                    modalEl = document.createElement('div');
+                    modalEl.className = 'modal fade';
+                    modalEl.id = 'confirmActionModalInline';
+                    modalEl.tabIndex = -1;
+                    modalEl.setAttribute('aria-hidden', 'true');
+                    modalEl.innerHTML = `
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="confirmActionInlineTitle">Konfirmasi</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body" id="confirmActionInlineMessage"></div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <button type="button" class="btn btn-danger" id="confirmActionInlineBtn">Ya, Lanjutkan</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modalEl);
+                }
+
+                const titleEl = modalEl.querySelector('#confirmActionInlineTitle');
+                const msgEl = modalEl.querySelector('#confirmActionInlineMessage');
+                const confirmBtn = modalEl.querySelector('#confirmActionInlineBtn');
+
+                if (titleEl) titleEl.textContent = title;
+                if (msgEl) msgEl.textContent = message;
+
+                let decided = false;
+                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+                const cleanup = () => {
+                    modalEl.removeEventListener('hidden.bs.modal', onHidden);
+                    if (confirmBtn) confirmBtn.removeEventListener('click', onConfirm);
+                };
+
+                const onHidden = () => {
+                    if (!decided) {
+                        decided = true;
+                        cleanup();
+                        resolve(false);
+                    }
+                };
+
+                const onConfirm = () => {
+                    if (!decided) {
+                        decided = true;
+                        cleanup();
+                        resolve(true);
+                        modal.hide();
+                    }
+                };
+
+                modalEl.addEventListener('hidden.bs.modal', onHidden);
+                if (confirmBtn) confirmBtn.addEventListener('click', onConfirm);
+                modal.show();
+            });
         }
 
         function fetchWithAuth(url, options = {}) {
@@ -780,7 +850,11 @@
 
         // Clear laporan sheet
         async function clearGSLaporanSheet() {
-            if (!confirm('Apakah Anda yakin ingin menghapus semua data di sheet ini?')) return;
+            const confirmed = await confirmAction(
+                'Apakah Anda yakin ingin menghapus semua data di sheet ini?',
+                'Konfirmasi Hapus Sheet'
+            );
+            if (!confirmed) return;
 
             try {
                 const response = await fetchWithAuth('/api/data-sheet/clear/Laporan%20Harian', {
@@ -806,7 +880,11 @@
 
         // Clear ikan sheet
         async function clearGSIkanSheet() {
-            if (!confirm('Apakah Anda yakin ingin menghapus semua data di sheet ini?')) return;
+            const confirmed = await confirmAction(
+                'Apakah Anda yakin ingin menghapus semua data di sheet ini?',
+                'Konfirmasi Hapus Sheet'
+            );
+            if (!confirmed) return;
 
             try {
                 const response = await fetchWithAuth('/api/data-sheet/clear/Data%20Ikan', {
@@ -1145,7 +1223,11 @@
 
         // Delete ikan
         async function deleteIkan(id) {
-            if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
+            const confirmed = await confirmAction(
+                'Apakah Anda yakin ingin menghapus data ini?',
+                'Konfirmasi Hapus Data Ikan'
+            );
+            if (!confirmed) return;
 
             try {
                 const response = await fetchWithAuth(`/api/ikan/${id}`, {

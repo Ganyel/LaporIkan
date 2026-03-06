@@ -38,7 +38,7 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'public'), {
     index: false,
     etag: true,
-    maxAge: isProduction ? '1d' : 0
+    maxAge: isProduction ? '5m' : 0
 }));
 
 // API Routes
@@ -58,10 +58,18 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Surrogate-Control', 'no-store');
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
 app.get('/admin', (req, res) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Surrogate-Control', 'no-store');
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 

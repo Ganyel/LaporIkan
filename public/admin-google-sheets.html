@@ -332,6 +332,75 @@
             return response.json();
         }
 
+        function confirmAction(message, title = 'Konfirmasi') {
+            if (typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+                return Promise.resolve(confirm(message));
+            }
+
+            return new Promise((resolve) => {
+                let modalEl = document.getElementById('confirmActionModalGS');
+
+                if (!modalEl) {
+                    modalEl = document.createElement('div');
+                    modalEl.className = 'modal fade';
+                    modalEl.id = 'confirmActionModalGS';
+                    modalEl.tabIndex = -1;
+                    modalEl.setAttribute('aria-hidden', 'true');
+                    modalEl.innerHTML = `
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="confirmActionGSTitle">Konfirmasi</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body" id="confirmActionGSMessage"></div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <button type="button" class="btn btn-danger" id="confirmActionGSBtn">Ya, Lanjutkan</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modalEl);
+                }
+
+                const titleEl = modalEl.querySelector('#confirmActionGSTitle');
+                const msgEl = modalEl.querySelector('#confirmActionGSMessage');
+                const confirmBtn = modalEl.querySelector('#confirmActionGSBtn');
+                if (titleEl) titleEl.textContent = title;
+                if (msgEl) msgEl.textContent = message;
+
+                let decided = false;
+                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+                const cleanup = () => {
+                    modalEl.removeEventListener('hidden.bs.modal', onHidden);
+                    if (confirmBtn) confirmBtn.removeEventListener('click', onConfirm);
+                };
+
+                const onHidden = () => {
+                    if (!decided) {
+                        decided = true;
+                        cleanup();
+                        resolve(false);
+                    }
+                };
+
+                const onConfirm = () => {
+                    if (!decided) {
+                        decided = true;
+                        cleanup();
+                        resolve(true);
+                        modal.hide();
+                    }
+                };
+
+                modalEl.addEventListener('hidden.bs.modal', onHidden);
+                if (confirmBtn) confirmBtn.addEventListener('click', onConfirm);
+                modal.show();
+            });
+        }
+
         function fetchWithAuth(url, options = {}) {
             const token = getAdminToken();
             if (!token) {
@@ -499,7 +568,11 @@
 
         // Clear laporan sheet
         async function clearLaporanSheet() {
-            if (!confirm('Apakah Anda yakin ingin menghapus semua data di sheet ini?')) return;
+            const confirmed = await confirmAction(
+                'Apakah Anda yakin ingin menghapus semua data di sheet ini?',
+                'Konfirmasi Hapus Sheet'
+            );
+            if (!confirmed) return;
 
             try {
                 const response = await fetchWithAuth('/api/data-sheet/clear/Laporan%20Harian', {
@@ -525,7 +598,11 @@
 
         // Clear ikan sheet
         async function clearIkanSheet() {
-            if (!confirm('Apakah Anda yakin ingin menghapus semua data di sheet ini?')) return;
+            const confirmed = await confirmAction(
+                'Apakah Anda yakin ingin menghapus semua data di sheet ini?',
+                'Konfirmasi Hapus Sheet'
+            );
+            if (!confirmed) return;
 
             try {
                 const response = await fetchWithAuth('/api/data-sheet/clear/Data%20Ikan', {

@@ -58,6 +58,76 @@ async function parseApiResponse(response) {
     return response.json();
 }
 
+function confirmAction(message, title = 'Konfirmasi') {
+    if (typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+        return Promise.resolve(confirm(message));
+    }
+
+    return new Promise((resolve) => {
+        let modalEl = document.getElementById('confirmActionModal');
+
+        if (!modalEl) {
+            modalEl = document.createElement('div');
+            modalEl.className = 'modal fade';
+            modalEl.id = 'confirmActionModal';
+            modalEl.tabIndex = -1;
+            modalEl.setAttribute('aria-hidden', 'true');
+            modalEl.innerHTML = `
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmActionTitle">Konfirmasi</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" id="confirmActionMessage"></div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="button" class="btn btn-danger" id="confirmActionBtn">Ya, Lanjutkan</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modalEl);
+        }
+
+        const titleEl = modalEl.querySelector('#confirmActionTitle');
+        const msgEl = modalEl.querySelector('#confirmActionMessage');
+        const confirmBtn = modalEl.querySelector('#confirmActionBtn');
+
+        if (titleEl) titleEl.textContent = title;
+        if (msgEl) msgEl.textContent = message;
+
+        let decided = false;
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+        const cleanup = () => {
+            modalEl.removeEventListener('hidden.bs.modal', onHidden);
+            if (confirmBtn) confirmBtn.removeEventListener('click', onConfirm);
+        };
+
+        const onHidden = () => {
+            if (!decided) {
+                decided = true;
+                cleanup();
+                resolve(false);
+            }
+        };
+
+        const onConfirm = () => {
+            if (!decided) {
+                decided = true;
+                cleanup();
+                resolve(true);
+                modal.hide();
+            }
+        };
+
+        modalEl.addEventListener('hidden.bs.modal', onHidden);
+        if (confirmBtn) confirmBtn.addEventListener('click', onConfirm);
+        modal.show();
+    });
+}
+
 // ==========================================
 // LOAD LAPORAN DATA
 // ==========================================
@@ -263,7 +333,12 @@ async function editData(tanggal) {
 // DELETE DATA
 // ==========================================
 async function deleteData(tanggal) {
-    if (!confirm(`Hapus data ${formatDate(tanggal)}?`)) {
+    const shouldDelete = await confirmAction(
+        `Hapus data ${formatDate(tanggal)}?`,
+        'Konfirmasi Hapus Data'
+    );
+
+    if (!shouldDelete) {
         return;
     }
 
