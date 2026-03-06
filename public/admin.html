@@ -857,6 +857,12 @@
 
         // Initialize Google Sheets on page load
         window.addEventListener('load', () => {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
             // Load ikan data saat tab ikan di-klik
             loadIkanDataList();
         });
@@ -918,6 +924,10 @@
                 });
 
                 const result = await response.json();
+
+                if (handleInvalidToken(result)) {
+                    return;
+                }
 
                 if (result.success) {
                     showAlert(idIkanEdit ? 'Data ikan berhasil diupdate' : 'Data ikan berhasil disimpan', 'success');

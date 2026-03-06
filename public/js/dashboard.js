@@ -19,6 +19,24 @@ const tableState = {
     tahunan: { data: [], page: 1 }
 };
 
+function getAuthHeaders() {
+    const token = localStorage.getItem('adminToken');
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+    };
+}
+
+function handleInvalidToken(result) {
+    if (result && result.success === false && result.message === 'Token tidak valid atau expired') {
+        localStorage.removeItem('adminToken');
+        window.location.href = '/login';
+        return true;
+    }
+
+    return false;
+}
+
 // ==========================================
 // INITIALIZE
 // ==========================================
@@ -371,19 +389,6 @@ async function loadDashboardData(startDate = null, endDate = null) {
             }
         }
 
-        const response = await fetch(`/api/laporan-harian?start=${startDate}&end=${endDate}`);
-        const result = await response.json();
-
-        if (!result.success) {
-            throw new Error(result.message);
-        }
-
-        const data = result.data || [];
-
-        // Update statistics
-        updateStatistics(data);
-
-        // Load and display harian data
         await loadDataHarian(startDate, endDate);
 
     } catch (error) {
@@ -565,8 +570,15 @@ function renderPagination(container, totalPages, currentPage, onPageChange) {
 // ==========================================
 async function loadDataHarian(startDate, endDate) {
     try {
-        const response = await fetch(`/api/laporan-harian?start=${startDate}&end=${endDate}`);
+        const response = await fetch(`/api/laporan-harian?start=${startDate}&end=${endDate}`, {
+            method: 'GET',
+            headers: getAuthHeaders()
+        });
         const result = await response.json();
+
+        if (handleInvalidToken(result)) {
+            return;
+        }
 
         if (!result.success) {
             throw new Error(result.message);
@@ -642,8 +654,15 @@ function drawChartHarian(data) {
 async function loadDataBulanan(yearParam = null, monthParam = 'all') {
     try {
         const year = yearParam || document.getElementById('filterYear').value || new Date().getFullYear();
-        const response = await fetch(`/api/laporan-harian/rekap/bulanan/${year}`);
+        const response = await fetch(`/api/laporan-harian/rekap/bulanan/${year}`, {
+            method: 'GET',
+            headers: getAuthHeaders()
+        });
         const result = await response.json();
+
+        if (handleInvalidToken(result)) {
+            return;
+        }
 
         if (!result.success) {
             throw new Error(result.message);
@@ -722,8 +741,15 @@ function drawChartBulanan(data) {
 // ==========================================
 async function loadDataTahunan(yearParam = '') {
     try {
-        const response = await fetch('/api/laporan-harian/rekap/tahunan');
+        const response = await fetch('/api/laporan-harian/rekap/tahunan', {
+            method: 'GET',
+            headers: getAuthHeaders()
+        });
         const result = await response.json();
+
+        if (handleInvalidToken(result)) {
+            return;
+        }
 
         if (!result.success) {
             throw new Error(result.message);

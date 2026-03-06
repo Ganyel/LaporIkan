@@ -385,6 +385,24 @@
             { key: 'bbm_non_surat', label: 'BBM Non-Subsidi', color: '#0891b2' }
         ];
 
+        function getAuthHeaders() {
+            const token = localStorage.getItem('adminToken');
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            };
+        }
+
+        function handleInvalidToken(result) {
+            if (result && result.success === false && result.message === 'Token tidak valid atau expired') {
+                localStorage.removeItem('adminToken');
+                window.location.href = '/login';
+                return true;
+            }
+
+            return false;
+        }
+
         function sumCategory(items, key) {
             return items.reduce((sum, item) => sum + (parseInt(item[key], 10) || 0), 0);
         }
@@ -527,9 +545,16 @@
 
             if (!selectedDate || !chartInstance) return;
 
-            fetch(`/api/laporan-harian?start=${selectedDate}&end=${selectedDate}`)
+            fetch(`/api/laporan-harian?start=${selectedDate}&end=${selectedDate}`, {
+                method: 'GET',
+                headers: getAuthHeaders()
+            })
                 .then((response) => response.json())
                 .then((result) => {
+                    if (handleInvalidToken(result)) {
+                        return;
+                    }
+
                     const data = result.success ? (result.data || []) : [];
                     const totals = CATEGORY_KEYS.map(item => sumCategory(data, item.key));
 
@@ -580,9 +605,16 @@
             const startValue = formatDateValue(startDate);
             const endValue = formatDateValue(endDate);
 
-            fetch(`/api/laporan-harian?start=${startValue}&end=${endValue}`)
+            fetch(`/api/laporan-harian?start=${startValue}&end=${endValue}`, {
+                method: 'GET',
+                headers: getAuthHeaders()
+            })
                 .then((response) => response.json())
                 .then((result) => {
+                    if (handleInvalidToken(result)) {
+                        return;
+                    }
+
                     const data = result.success ? (result.data || []) : [];
                     const weekBuckets = Array.from({ length: 4 }, () => ({
                         stblkk: 0,
@@ -645,9 +677,16 @@
             const years = Array.from({ length: 5 }, (_, i) => baseYear - (4 - i));
             const yearSet = new Set(years.map(String));
 
-            fetch('/api/laporan-harian/rekap/tahunan')
+            fetch('/api/laporan-harian/rekap/tahunan', {
+                method: 'GET',
+                headers: getAuthHeaders()
+            })
                 .then((response) => response.json())
                 .then((result) => {
+                    if (handleInvalidToken(result)) {
+                        return;
+                    }
+
                     const data = result.success ? (result.data || []) : [];
                     const dataMap = new Map(data.map(item => [String(item.tahun), item]));
 
