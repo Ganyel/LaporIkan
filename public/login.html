@@ -851,10 +851,6 @@
             if (username) {
                 localStorage.setItem('adminUsername', username);
             }
-
-            // Bersihkan legacy token jika ada
-            sessionStorage.removeItem('adminToken');
-            sessionStorage.removeItem('adminUsername');
         }
 
         // Handle login form submission (AJAX, no reload)
@@ -891,15 +887,24 @@
                     return;
                 }
 
-                // persist token sesuai requirement
-                persistToken(data.token, data.username || username);
+                if (!data.token) {
+                    showAlert('Login gagal: token tidak ditemukan pada response server.', 'danger');
+                    showLoading(false);
+                    return;
+                }
+
+                // Persist token sesuai requirement
+                localStorage.setItem('adminToken', data.token);
+                if (data.username || username) {
+                    localStorage.setItem('adminUsername', data.username || username);
+                }
 
                 // remember username for convenience
                 if (rememberMe) localStorage.setItem('rememberedUsername', username);
                 else localStorage.removeItem('rememberedUsername');
 
                 showAlert('✅ Login berhasil! Mengalihkan...', 'success');
-                setTimeout(()=> window.location.href = '/admin', 900);
+                window.location.href = '/admin';
 
             } catch (err) {
                 console.error(err);
